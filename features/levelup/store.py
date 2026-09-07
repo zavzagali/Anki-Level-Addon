@@ -200,7 +200,7 @@ class LevelStore:
 
         earned = xp_result["total"]
         s["xp"] += earned
-        s["totalXp"] += earned
+        s["totalXp"] = max(0, s["totalXp"] + earned)
         s["todayXp"] += earned
         s["totalCards"] += 1
 

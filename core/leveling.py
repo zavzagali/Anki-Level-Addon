@@ -11,7 +11,7 @@ TITLES = [
     (100, "Anki God"),
 ]
 
-XP_EASE = {1: 1, 2: 3, 3: 5, 4: 8}
+XP_EASE = {1: -8, 2: 0, 3: 5, 4: 8}
 
 
 def xp_for_level(level: int) -> int:
