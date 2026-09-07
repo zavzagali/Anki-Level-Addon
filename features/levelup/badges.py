@@ -85,6 +85,18 @@ BADGES = {
         "icon": "⚡",
         "check": lambda s: s.get("combo", 0) >= 10,
     },
+    "streak_365": {
+        "name": "365 Warrior",
+        "desc": "Study 365 days in a row",
+        "icon": "🏅",
+        "check": lambda s: s.get("bestStreak", 0) >= 365,
+    },
+    "combo_easy_100": {
+        "name": "Combo God",
+        "desc": "100 consecutive Easy answers",
+        "icon": "💀",
+        "check": lambda s: s.get("bestEasyCombo", 0) >= 100,
+    },
 }
 
 

@@ -33,6 +33,8 @@ DEFAULT_STATE = {
     "todayCount": 0,
     "todayCorrect": 0,
     "combo": 0,
+    "easyCombo": 0,
+    "bestEasyCombo": 0,
     "totalCards": 0,
 }
 
@@ -185,6 +187,12 @@ class LevelStore:
             s["combo"] += 1
         else:
             s["combo"] = 0
+
+        if ease == 4:
+            s["easyCombo"] += 1
+            s["bestEasyCombo"] = max(s["bestEasyCombo"], s["easyCombo"])
+        else:
+            s["easyCombo"] = 0
 
         xp_result = leveling.calculate_xp(
             ease=ease,
