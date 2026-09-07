@@ -1,0 +1,15 @@
+{
+    "name": "levelup-anki",
+    "version": "1.0.0",
+    "private": true,
+    "description": "TypeScript sources for Level add-on",
+    "scripts": {
+        "build": "node esbuild.config.mjs",
+        "watch": "node esbuild.config.mjs --watch",
+        "typecheck": "tsc --noEmit"
+    },
+    "devDependencies": {
+        "esbuild": "^0.24.0",
+        "typescript": "^5.7.0"
+    }
+}

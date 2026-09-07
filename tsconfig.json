@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+        "target": "ES2020",
+        "module": "ESNext",
+        "moduleResolution": "bundler",
+        "strict": true,
+        "noEmit": true,
+        "skipLibCheck": true,
+        "lib": ["ES2020", "DOM", "DOM.Iterable"],
+        "outDir": "./web",
+        "rootDir": "./src",
+        "baseUrl": ".",
+        "paths": {
+            "@shared/*": ["src/shared/*"]
+        }
+    },
+    "include": ["src/**/*.ts"],
+    "exclude": ["node_modules", "web"]
+}

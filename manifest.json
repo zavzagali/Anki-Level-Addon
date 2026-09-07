@@ -1,0 +1,8 @@
+{
+    "name": "Level",
+    "package": "levelup_anki",
+    "human_version": "1.0.0",
+    "min_point_version": 231000,
+    "homepage": "https://github.com/levelup-anki",
+    "conflicts": []
+}

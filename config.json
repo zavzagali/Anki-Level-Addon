@@ -1,0 +1,15 @@
+{
+    "showHud": true,
+    "showStatsPanel": true,
+    "showLevelUpModal": true,
+    "showBadges": true,
+    "dailyGoal": 50,
+    "language": "en",
+    "hudPosition": "bottom",
+    "hudCompact": false,
+    "soundEnabled": true,
+    "confettiEnabled": true,
+    "streakBonusMax": 50,
+    "comboThreshold": 10,
+    "speedBonusThreshold": 5
+}

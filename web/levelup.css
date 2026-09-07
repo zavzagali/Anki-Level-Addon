@@ -1,0 +1,481 @@
+/* LevelUp Anki — HUD bar, level-up modal, stats panel */
+
+:root {
+    --lua-accent: #0A84FF;
+    --lua-accent-soft: rgba(10, 132, 255, 0.12);
+    --lua-green: #30D158;
+    --lua-orange: #FF9F0A;
+    --lua-red: #FF453A;
+    --lua-purple: #BF5AF2;
+    --lua-gold: #FFD60A;
+    --lua-surface: rgba(255, 255, 255, 0.82);
+    --lua-text: #1c1c1e;
+    --lua-text-subtle: #8e8e93;
+    --lua-border: rgba(60, 60, 67, 0.12);
+    --lua-radius: 12px;
+    --lua-chart-bg: rgba(120, 120, 128, 0.06);
+}
+
+html.night, html.dark, body.night, body.dark {
+    --lua-accent: #0A84FF;
+    --lua-accent-soft: rgba(10, 132, 255, 0.18);
+    --lua-green: #30D158;
+    --lua-orange: #FF9F0A;
+    --lua-red: #FF453A;
+    --lua-purple: #BF5AF2;
+    --lua-gold: #FFD60A;
+    --lua-surface: rgba(30, 30, 30, 0.85);
+    --lua-text: #f2f2f7;
+    --lua-text-subtle: #98989d;
+    --lua-border: rgba(84, 84, 88, 0.35);
+    --lua-chart-bg: rgba(120, 120, 128, 0.12);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not(html.night):not(html.dark) {
+        --lua-accent: #0A84FF;
+        --lua-surface: rgba(30, 30, 30, 0.85);
+        --lua-text: #f2f2f7;
+        --lua-text-subtle: #98989d;
+        --lua-border: rgba(84, 84, 88, 0.35);
+        --lua-chart-bg: rgba(120, 120, 128, 0.12);
+    }
+}
+
+/* === LEVEL BAR — shared between reviewer & dashboard === */
+.lua-level-bar,
+#lua-level-bar {
+    background: var(--lua-surface);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--lua-border);
+    border-radius: var(--lua-radius);
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
+    font-size: 13px;
+    color: var(--lua-text);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    user-select: none;
+    margin: 0 0 12px 0;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
+}
+
+.lua-lb-level {
+    font-weight: 800;
+    font-size: 18px;
+    color: var(--lua-accent);
+    white-space: nowrap;
+}
+
+.lua-lb-title {
+    font-size: 12px;
+    color: var(--lua-text-subtle);
+    white-space: nowrap;
+}
+
+.lua-lb-xp-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    min-width: 120px;
+}
+
+.lua-lb-xp-bar {
+    flex: 1;
+    height: 10px;
+    background: rgba(120, 120, 128, 0.15);
+    border-radius: 5px;
+    overflow: hidden;
+    min-width: 80px;
+}
+
+.lua-lb-xp-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--lua-accent), var(--lua-purple));
+    border-radius: 5px;
+    transition: width 0.5s ease;
+}
+
+.lua-lb-xp-text {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--lua-text-subtle);
+    white-space: nowrap;
+}
+
+.lua-lb-streak {
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.lua-lb-cards {
+    font-size: 12px;
+    color: var(--lua-text-subtle);
+    white-space: nowrap;
+}
+
+/* === XP TOAST === */
+.lua-xp-toast {
+    position: fixed;
+    z-index: 2000;
+    background: var(--lua-accent);
+    color: white;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 20px;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(10px);
+    animation: lua-toast-in 0.3s ease forwards, lua-toast-out 0.3s ease 1.2s forwards;
+}
+
+.lua-xp-toast.bonus {
+    background: linear-gradient(135deg, var(--lua-orange), var(--lua-red));
+}
+
+.lua-xp-toast.combo {
+    background: linear-gradient(135deg, var(--lua-purple), var(--lua-accent));
+}
+
+.lua-xp-toast.streak-bonus {
+    background: linear-gradient(135deg, var(--lua-green), #0a9e4a);
+}
+
+@keyframes lua-toast-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes lua-toast-out {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(-20px); }
+}
+
+/* === LEVEL UP MODAL === */
+.lua-levelup-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 3000;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    animation: lua-overlay-in 0.3s ease forwards;
+}
+
+.lua-levelup-card {
+    background: var(--lua-surface);
+    border-radius: 20px;
+    padding: 40px;
+    text-align: center;
+    max-width: 340px;
+    width: 90%;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.3);
+    transform: scale(0.8);
+    animation: lua-card-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s forwards;
+}
+
+.lua-levelup-icon {
+    font-size: 48px;
+    margin-bottom: 12px;
+}
+
+.lua-levelup-number {
+    font-size: 56px;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--lua-accent), var(--lua-purple));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.1;
+}
+
+.lua-levelup-label {
+    font-size: 14px;
+    color: var(--lua-text-subtle);
+    margin-bottom: 8px;
+}
+
+.lua-levelup-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+.lua-levelup-dismiss {
+    background: var(--lua-accent);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 28px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.lua-levelup-dismiss:hover {
+    background: #005ecb;
+}
+
+@keyframes lua-overlay-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes lua-card-in {
+    from { opacity: 0; transform: scale(0.8) translateY(20px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* === BADGE TOAST === */
+.lua-badge-toast {
+    position: fixed;
+    z-index: 2500;
+    bottom: 60px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, var(--lua-gold), var(--lua-orange));
+    color: #1d1d1f;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+    padding: 10px 20px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 4px 20px rgba(255, 214, 10, 0.4);
+    opacity: 0;
+    animation: lua-badge-in 0.4s ease 0.3s forwards, lua-toast-out 0.3s ease 3s forwards;
+    pointer-events: none;
+}
+
+.lua-badge-icon {
+    font-size: 24px;
+}
+
+.lua-badge-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.lua-badge-label {
+    font-size: 11px;
+    opacity: 0.7;
+}
+
+.lua-badge-name {
+    font-size: 14px;
+    font-weight: 700;
+}
+
+@keyframes lua-badge-in {
+    from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+    to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+/* === STATS PANEL === */
+.lua-stats-panel {
+    background: var(--lua-surface);
+    border: 1px solid var(--lua-border);
+    border-radius: var(--lua-radius);
+    padding: 16px;
+    margin: 12px 0;
+}
+
+.lua-stats-header {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.lua-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.lua-stat-card {
+    text-align: center;
+    padding: 10px 6px;
+    background: rgba(120, 120, 128, 0.06);
+    border-radius: 10px;
+}
+
+.lua-stat-value {
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.lua-stat-label {
+    font-size: 11px;
+    color: var(--lua-text-subtle);
+    margin-top: 2px;
+}
+
+.lua-chart-container {
+    margin-top: 12px;
+}
+
+.lua-chart-label {
+    font-size: 12px;
+    color: var(--lua-text-subtle);
+    margin-bottom: 6px;
+}
+
+.lua-chart-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 3px;
+    height: 60px;
+}
+
+.lua-chart-bar {
+    flex: 1;
+    background: var(--lua-accent);
+    border-radius: 3px 3px 0 0;
+    min-height: 2px;
+    transition: height 0.3s ease;
+    position: relative;
+}
+
+.lua-chart-bar:hover {
+    opacity: 0.8;
+}
+
+.lua-chart-bar:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--lua-text);
+    color: var(--lua-surface);
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    white-space: nowrap;
+    margin-bottom: 4px;
+}
+
+/* === DASHBOARD PANEL === */
+#lvlup-panel {
+    background: var(--lua-surface);
+    border: 1px solid var(--lua-border);
+    border-radius: var(--lua-radius);
+    padding: 16px;
+    margin-bottom: 12px;
+}
+
+.lvlup-panel-inner {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.lvlup-level {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--lua-accent);
+}
+
+.lvlup-title {
+    font-size: 13px;
+    color: var(--lua-text-subtle);
+}
+
+.lvlup-xp-bar {
+    flex: 1;
+    min-width: 120px;
+    height: 8px;
+    background: rgba(120, 120, 128, 0.15);
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+}
+
+.lvlup-xp-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--lua-accent), var(--lua-purple));
+    border-radius: 4px;
+    transition: width 0.5s ease;
+}
+
+.lvlup-xp-text {
+    position: absolute;
+    top: -18px;
+    right: 0;
+    font-size: 11px;
+    color: var(--lua-text-subtle);
+}
+
+.lvlup-stats {
+    display: flex;
+    gap: 12px;
+    font-size: 13px;
+    color: var(--lua-text-subtle);
+}
+
+/* === BADGES GRID === */
+.lua-badges-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.lua-badge-card {
+    text-align: center;
+    padding: 12px 6px;
+    border-radius: 10px;
+    background: rgba(120, 120, 128, 0.06);
+    border: 1px solid transparent;
+    transition: border-color 0.2s;
+}
+
+.lua-badge-card.earned {
+    border-color: var(--lua-gold);
+    background: rgba(255, 214, 10, 0.06);
+}
+
+.lua-badge-card.locked {
+    opacity: 0.4;
+    filter: grayscale(1);
+}
+
+.lua-badge-card-icon {
+    font-size: 28px;
+    margin-bottom: 4px;
+}
+
+.lua-badge-card-name {
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.lua-badge-card-desc {
+    font-size: 10px;
+    color: var(--lua-text-subtle);
+    margin-top: 2px;
+}
