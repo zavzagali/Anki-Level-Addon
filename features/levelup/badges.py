@@ -58,16 +58,18 @@ BADGES = {
         "icon": "🏆",
         "tiers": [
             lambda s: s.get("bestStreak", 0) >= 30,
+            lambda s: s.get("bestStreak", 0) >= 60,
             lambda s: s.get("bestStreak", 0) >= 90,
-            lambda s: s.get("bestStreak", 0) >= 180,
         ],
     },
     "streak_100": {
         "name": "Unstoppable",
-        "desc": "Study 365 days in a row",
+        "desc": "Study streak",
         "icon": "💎",
         "tiers": [
             lambda s: s.get("bestStreak", 0) >= 365,
+            lambda s: s.get("bestStreak", 0) >= 730,
+            lambda s: s.get("bestStreak", 0) >= 1095,
         ],
     },
     "level_10": {
@@ -132,12 +134,12 @@ BADGES = {
     },
     "streak_365": {
         "name": "365 Warrior",
-        "desc": "Study 365 days in a row",
+        "desc": "Study streak",
         "icon": "🏅",
         "tiers": [
             lambda s: s.get("bestStreak", 0) >= 365,
-            lambda s: s.get("bestStreak", 0) >= 500,
             lambda s: s.get("bestStreak", 0) >= 730,
+            lambda s: s.get("bestStreak", 0) >= 1095,
         ],
     },
     "combo_easy_100": {
