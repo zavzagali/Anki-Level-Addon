@@ -48,6 +48,7 @@ export interface XpDetail {
     speed_bonus: number;
     daily_bonus_pct: number;
     new_card_bonus: number;
+    daily100_bonus: number;
 }
 
 export interface BadgeResult {
@@ -232,6 +233,8 @@ const bridge: LuaBridge = {
 
         if (result.isNew) {
             toastText += " (new card)";
+        } else if (detail.daily100_bonus > 0) {
+            toastText += " (100 cards!)";
         } else if (detail.streak_mult > 1) {
             toastText += ` (streak x${detail.streak_mult})`;
         } else if (detail.combo_mult > 1) {

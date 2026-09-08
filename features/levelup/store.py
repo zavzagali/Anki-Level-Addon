@@ -32,6 +32,7 @@ DEFAULT_STATE = {
     "todayXp": 0,
     "todayCount": 0,
     "todayCorrect": 0,
+    "today100Done": False,
     "combo": 0,
     "easyCombo": 0,
     "bestEasyCombo": 0,
@@ -196,6 +197,7 @@ class LevelStore:
             s["todayXp"] = 0
             s["todayCount"] = 0
             s["todayCorrect"] = 0
+            s["today100Done"] = False
 
         s["lastDay"] = today
         s["todayCount"] += 1
@@ -229,6 +231,13 @@ class LevelStore:
             xp_result["new_card_bonus"] = 2
         else:
             xp_result["new_card_bonus"] = 0
+
+        if s["todayCount"] >= 100 and not s.get("today100Done", False):
+            earned += 20
+            xp_result["daily100_bonus"] = 20
+            s["today100Done"] = True
+        else:
+            xp_result["daily100_bonus"] = 0
 
         s["xp"] += earned
         s["totalXp"] = max(0, s["totalXp"] + earned)
