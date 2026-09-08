@@ -47,9 +47,9 @@ BADGES = {
         "desc": "Study streak",
         "icon": "⭐",
         "tiers": [
-            lambda s: s.get("bestStreak", 0) >= 7,
-            lambda s: s.get("bestStreak", 0) >= 14,
-            lambda s: s.get("bestStreak", 0) >= 21,
+            lambda s: s.get("streakMilestones", {}).get("7", 0) >= 1,
+            lambda s: s.get("streakMilestones", {}).get("7", 0) >= 2,
+            lambda s: s.get("streakMilestones", {}).get("7", 0) >= 3,
         ],
     },
     "streak_30": {
@@ -57,9 +57,9 @@ BADGES = {
         "desc": "Study streak",
         "icon": "🏆",
         "tiers": [
-            lambda s: s.get("bestStreak", 0) >= 30,
-            lambda s: s.get("bestStreak", 0) >= 60,
-            lambda s: s.get("bestStreak", 0) >= 90,
+            lambda s: s.get("streakMilestones", {}).get("30", 0) >= 1,
+            lambda s: s.get("streakMilestones", {}).get("30", 0) >= 2,
+            lambda s: s.get("streakMilestones", {}).get("30", 0) >= 3,
         ],
     },
     "streak_100": {
@@ -67,9 +67,9 @@ BADGES = {
         "desc": "Study streak",
         "icon": "💎",
         "tiers": [
-            lambda s: s.get("bestStreak", 0) >= 365,
-            lambda s: s.get("bestStreak", 0) >= 730,
-            lambda s: s.get("bestStreak", 0) >= 1095,
+            lambda s: s.get("streakMilestones", {}).get("365", 0) >= 1,
+            lambda s: s.get("streakMilestones", {}).get("365", 0) >= 2,
+            lambda s: s.get("streakMilestones", {}).get("365", 0) >= 3,
         ],
     },
     "level_10": {
@@ -137,9 +137,9 @@ BADGES = {
         "desc": "Study streak",
         "icon": "🏅",
         "tiers": [
-            lambda s: s.get("bestStreak", 0) >= 365,
-            lambda s: s.get("bestStreak", 0) >= 730,
-            lambda s: s.get("bestStreak", 0) >= 1095,
+            lambda s: s.get("streakMilestones", {}).get("365", 0) >= 1,
+            lambda s: s.get("streakMilestones", {}).get("365", 0) >= 2,
+            lambda s: s.get("streakMilestones", {}).get("365", 0) >= 3,
         ],
     },
     "combo_easy_100": {

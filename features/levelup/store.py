@@ -36,6 +36,7 @@ DEFAULT_STATE = {
     "easyCombo": 0,
     "bestEasyCombo": 0,
     "totalCards": 0,
+    "streakMilestones": {"7": 0, "30": 0, "365": 0},
 }
 
 
@@ -182,6 +183,15 @@ class LevelStore:
             if days_diff == 1:
                 s["streak"] += 1
             elif days_diff > 1:
+                prev_streak = s["streak"]
+                milestones = s.get("streakMilestones", {"7": 0, "30": 0, "365": 0})
+                if prev_streak >= 7:
+                    milestones["7"] = milestones.get("7", 0) + 1
+                if prev_streak >= 30:
+                    milestones["30"] = milestones.get("30", 0) + 1
+                if prev_streak >= 365:
+                    milestones["365"] = milestones.get("365", 0) + 1
+                s["streakMilestones"] = milestones
                 s["streak"] = 1
             s["todayXp"] = 0
             s["todayCount"] = 0
@@ -277,6 +287,7 @@ class LevelStore:
             "combo": s["combo"],
             "bestEasyCombo": s["bestEasyCombo"],
             "dailyGoal": conf.get().get("dailyGoal", 50),
+            "streakMilestones": s.get("streakMilestones", {"7": 0, "30": 0, "365": 0}),
             "badges": self.badges(),
         }
 
