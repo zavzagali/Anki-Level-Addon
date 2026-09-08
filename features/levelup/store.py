@@ -9,8 +9,7 @@ Storage keys:
     lvlup_badges      {badge_id: earned_day_int}
 """
 
-import time
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 
 from aqt import gui_hooks, mw
 
@@ -44,11 +43,6 @@ DEFAULT_STATE = {
 def _today_int() -> int:
     now = datetime.now(timezone.utc)
     return int(now.strftime("%Y%m%d"))
-
-
-def _today_ts() -> int:
-    now = datetime.now(timezone.utc)
-    return int(now.timestamp())
 
 
 def _col():
@@ -240,8 +234,10 @@ class LevelStore:
             xp_result["daily100_bonus"] = 0
 
         s["xp"] += earned
+        s["xp"] = max(0, s["xp"])
         s["totalXp"] = max(0, s["totalXp"] + earned)
         s["todayXp"] += earned
+        s["todayXp"] = max(0, s["todayXp"])
         s["totalCards"] += 1
 
         old_level = s["level"]
@@ -306,7 +302,7 @@ class LevelStore:
         dt = datetime.strptime(str(today), "%Y%m%d")
         days = []
         for i in range(6, -1, -1):
-            d = dt - __import__("datetime").timedelta(days=i)
+            d = dt - timedelta(days=i)
             day_int = int(d.strftime("%Y%m%d"))
             log = self.log(int(d.strftime("%Y")))
             data = log.get(day_int, {})
@@ -320,12 +316,11 @@ class LevelStore:
 
     def get_month_stats(self) -> list:
         """Last 30 days: [{day, xp, cards}]"""
-        import datetime as _dt
         today_int = _today_int()
-        today_dt = _dt.datetime.strptime(str(today_int), "%Y%m%d")
+        today_dt = datetime.strptime(str(today_int), "%Y%m%d")
         days = []
         for i in range(29, -1, -1):
-            d = today_dt - _dt.timedelta(days=i)
+            d = today_dt - timedelta(days=i)
             day_int = int(d.strftime("%Y%m%d"))
             log = self.log(int(d.strftime("%Y")))
             data = log.get(day_int, {})

@@ -27,6 +27,8 @@ def handle_message(handled, message: str, context):
         _apply_setting(command[len("settings:"):])
     elif command == "dismiss_badge":
         pass
+    else:
+        return handled
 
     return (True, None)
 
@@ -70,14 +72,19 @@ def _push_month_stats() -> None:
         pass
 
 
+from ..features.levelup.badges import TIER_ICONS, TIER_NAMES
+
+
 def _push_badges() -> None:
     store = level_store.get_store()
     earned = store.badges()
     all_badges = badge_module.get_all_badges()
     for b in all_badges:
-        b["earned"] = b["id"] in earned
-        if b["earned"]:
-            b["earnedDay"] = earned[b["id"]]
+        tier = earned.get(b["id"], 0)
+        b["tier"] = tier
+        b["earned"] = tier > 0
+        b["tierIcon"] = TIER_ICONS.get(tier - 1, "") if tier > 0 else ""
+        b["tierName"] = TIER_NAMES.get(tier - 1, "") if tier > 0 else ""
     try:
         mw.deckBrowser.web.eval(
             f"window.Lua && window.Lua.onBadges({json.dumps(all_badges)});"
@@ -99,7 +106,7 @@ def _apply_setting(payload: str) -> None:
         if key in data:
             config[key] = bool(data[key])
     if "dailyGoal" in data:
-        config["dailyGoal"] = int(data["dailyGoal"])
+        config["dailyGoal"] = max(1, int(data["dailyGoal"]))
     if "hudPosition" in data:
         config["hudPosition"] = str(data["hudPosition"])
     conf.save(config)

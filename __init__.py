@@ -33,8 +33,11 @@ def _summary() -> dict:
     except Exception:
         return {
             "level": 1, "totalXp": 0, "xpInLevel": 0, "xpForLevel": 50,
-            "title": "Novice", "streak": 0, "totalCards": 0,
+            "title": "Novice", "color": "rgb(48, 209, 88)",
+            "streak": 0, "bestStreak": 0, "totalCards": 0,
             "todayXp": 0, "todayCards": 0, "todayCorrect": 0, "combo": 0,
+            "bestEasyCombo": 0, "dailyGoal": 50,
+            "streakMilestones": {"7": 0, "30": 0, "365": 0},
             "badges": {},
         }
 

@@ -206,8 +206,8 @@ function renderBadges(badges: BadgeDef[]): void {
     if (!grid) return;
 
     grid.innerHTML = badges.map(b => {
-        const cls = b.tier > 0 ? "earned" : "locked";
-        const tierDisplay = b.tier > 0 ? Array(b.tier).fill(b.tierIcon).join("") : "";
+        const cls = b.earned ? "earned" : "locked";
+        const tierDisplay = b.earned ? b.tierIcon : "";
         return `
             <div class="lua-badge-card ${cls}">
                 <div class="lua-badge-card-icon">${b.icon}</div>
