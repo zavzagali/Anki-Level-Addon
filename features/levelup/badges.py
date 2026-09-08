@@ -64,12 +64,12 @@ BADGES = {
     },
     "streak_100": {
         "name": "Unstoppable",
-        "desc": "Study streak",
+        "desc": "Continuous streak",
         "icon": "💎",
         "tiers": [
-            lambda s: s.get("streakMilestones", {}).get("365", 0) >= 1,
-            lambda s: s.get("streakMilestones", {}).get("365", 0) >= 2,
-            lambda s: s.get("streakMilestones", {}).get("365", 0) >= 3,
+            lambda s: s.get("bestStreak", 0) >= 366,
+            lambda s: s.get("bestStreak", 0) >= 730,
+            lambda s: s.get("bestStreak", 0) >= 1095,
         ],
     },
     "level_10": {
