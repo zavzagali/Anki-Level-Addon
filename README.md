@@ -5,17 +5,6 @@ Level system add-on for [Anki](https://apps.ankiweb.net/). Earn XP, level up, ma
 ![Anki 23.10+](https://img.shields.io/badge/Anki-23.10+-blue)
 ![Version](https://img.shields.io/badge/version-0.2-green)
 
-## XP Calculation
-| Ease | Base XP |
-|------|---------|
-| Again | -8 |
-| Hard | 0 |
-| Good | 5 |
-| Easy | 8 |
-
-
-**Level formule:** `50 × level^1.5` XP required per level
-
 ## Installation
 
 
@@ -40,3 +29,15 @@ Open Anki → Tools → Add-ons → Level → Config
 | `streakBonusMax` | `50` | Max streak bonus percentage |
 | `comboThreshold` | `10` | Cards needed for combo steps |
 | `speedBonusThreshold` | `5` | Seconds for speed bonus |
+
+
+## XP Calculation
+| Ease | Base XP |
+|------|---------|
+| Again | -8 |
+| Hard | 0 |
+| Good | 5 |
+| Easy | 8 |
+
+
+**Level formule:** `50 × level^1.5` XP required per level
