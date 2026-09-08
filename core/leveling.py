@@ -13,6 +13,44 @@ TITLES = [
 
 XP_EASE = {1: -8, 2: 0, 3: 5, 4: 8}
 
+# Color stops: (level, hue, saturation, lightness)
+_COLOR_STOPS = [
+    (1,  142, 71, 45),   # green
+    (25,   2, 100, 62),  # red
+    (50, 278, 69, 66),   # purple
+    (75, 234, 2, 61),    # gray
+]
+
+
+def _lerp(a: float, b: float, t: float) -> float:
+    return a + (b - a) * t
+
+
+def _lerp_hue(h1: float, h2: float, t: float) -> float:
+    diff = h2 - h1
+    if diff > 180:
+        h1 += 360
+    elif diff < -180:
+        h2 += 360
+    return (_lerp(h1, h2, t) + 360) % 360
+
+
+def level_color(level: int) -> str:
+    if level >= 75:
+        return "rgb(152, 152, 157)"
+
+    for i in range(len(_COLOR_STOPS) - 1):
+        l1, h1, s1, l1v = _COLOR_STOPS[i]
+        l2, h2, s2, l2v = _COLOR_STOPS[i + 1]
+        if level <= l2:
+            t = (level - l1) / (l2 - l1)
+            h = _lerp_hue(h1, h2, t)
+            s = _lerp(s1, s2, t)
+            l = _lerp(l1v, l2v, t)
+            return f"hsl({h:.0f}, {s:.0f}%, {l:.0f}%)"
+
+    return "rgb(152, 152, 157)"
+
 
 def xp_for_level(level: int) -> int:
     return int(50 * (level ** 1.5))

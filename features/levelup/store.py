@@ -254,6 +254,7 @@ class LevelStore:
             "xpInLevel": leveling.xp_in_level(s["totalXp"]),
             "xpForLevel": leveling.xp_for_level(s["level"]),
             "title": leveling.get_title(s["level"]),
+            "color": leveling.level_color(s["level"]),
             "streak": s["streak"],
             "bestStreak": s["bestStreak"],
             "totalCards": s["totalCards"],

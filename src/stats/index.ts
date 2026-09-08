@@ -45,7 +45,7 @@ function init(): void {
         <div class="lua-stats-header">Statistics</div>
         <div class="lua-stats-grid">
             <div class="lua-stat-card">
-                <div class="lua-stat-value">${data.level}</div>
+                <div class="lua-stat-value" style="color:${data.color || 'var(--lvl-accent)'}">${data.level}</div>
                 <div class="lua-stat-label">Level</div>
             </div>
             <div class="lua-stat-card">

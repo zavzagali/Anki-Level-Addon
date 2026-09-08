@@ -7,6 +7,7 @@ from aqt import gui_hooks, mw
 from aqt.deckbrowser import DeckBrowser
 
 from .core import conf
+from .core import leveling
 from .features.levelup import store as level_store
 from .ui import bridge
 
@@ -42,13 +43,14 @@ def _panel_html(s: dict) -> str:
     pct = 0.0
     if s.get("xpForLevel", 0) > 0:
         pct = min(100.0, (s["xpInLevel"] / s["xpForLevel"]) * 100)
+    color = leveling.level_color(s["level"])
     return (
         '<div id="lvlup-panel">'
         '<div class="lvlup-panel-inner">'
-        f'<div class="lvlup-level">Lvl {s["level"]}</div>'
+        f'<div class="lvlup-level" style="color:{color}">Lvl {s["level"]}</div>'
         f'<div class="lvlup-title">{s["title"]}</div>'
         '<div class="lvlup-xp-bar">'
-        f'<div class="lvlup-xp-fill" style="width:{pct:.1f}%"></div>'
+        f'<div class="lvlup-xp-fill" style="width:{pct:.1f}%;background:{color}"></div>'
         f'<span class="lvlup-xp-text">{s["xpInLevel"]}/{s["xpForLevel"]} XP</span>'
         '</div>'
         '<div class="lvlup-stats">'

@@ -85,7 +85,7 @@ html.night, html.dark, body.night, body.dark {
     height: 100%;
     background: var(--lvl-accent);
     border-radius: 4px;
-    transition: width 0.4s ease;
+    transition: width 0.4s ease, background 0.6s ease;
 }
 
 .lua-lb-xp-text {
@@ -353,7 +353,7 @@ html.night, html.dark, body.night, body.dark {
     height: 100%;
     background: var(--lvl-accent);
     border-radius: 3px;
-    transition: width 0.4s ease;
+    transition: width 0.4s ease, background 0.6s ease;
 }
 
 .lvlup-xp-text {

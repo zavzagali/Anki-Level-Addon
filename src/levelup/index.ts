@@ -13,6 +13,7 @@ export interface LevelUpSummary {
     xpInLevel: number;
     xpForLevel: number;
     title: string;
+    color: string;
     streak: number;
     bestStreak: number;
     totalCards: number;
@@ -90,7 +91,8 @@ function pycmd(cmd: string): void {
 function getData(): LevelUpSummary {
     return window.LUA_DATA || {
         level: 1, totalXp: 0, xpInLevel: 0, xpForLevel: 50,
-        title: "Novice", streak: 0, bestStreak: 0, totalCards: 0,
+        title: "Novice", color: "rgb(48, 209, 88)",
+        streak: 0, bestStreak: 0, totalCards: 0,
         todayXp: 0, todayCards: 0, todayCorrect: 0, combo: 0, badges: {}
     };
 }
@@ -114,7 +116,10 @@ function updateHud(): void {
     if (titleEl) titleEl.textContent = d.title;
 
     const fill = bar.querySelector(".lua-lb-xp-fill") as HTMLElement;
-    if (fill) fill.style.width = `${xpPct(d)}%`;
+    if (fill) {
+        fill.style.width = `${xpPct(d)}%`;
+        fill.style.background = d.color;
+    }
 
     const xpText = bar.querySelector(".lua-lb-xp-text");
     if (xpText) xpText.textContent = `${d.xpInLevel}/${d.xpForLevel} XP`;
