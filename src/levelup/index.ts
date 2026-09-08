@@ -83,7 +83,6 @@ export interface LuaBridge {
     onXpAwarded(result: XpAwardResult): void;
     onSummary(summary: LevelUpSummary): void;
     onLevelUp(level: number, title: string): void;
-    onWeekStats(stats: DayStat[]): void;
     onMonthStats(stats: DayStat[]): void;
     onBadges(badges: BadgeDef[]): void;
     updateReviewerBar(xp: number, combo: number): void;
@@ -300,10 +299,6 @@ const bridge: LuaBridge = {
 
     onLevelUp(level: number, title: string): void {
         showLevelUpModal(level, title);
-    },
-
-    onWeekStats(stats: DayStat[]): void {
-        renderChart("lua-week-chart", stats);
     },
 
     onMonthStats(stats: DayStat[]): void {

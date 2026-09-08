@@ -17,8 +17,6 @@ def handle_message(handled, message: str, context):
 
     if command == "summary":
         _push_summary()
-    elif command == "week_stats":
-        _push_week_stats()
     elif command == "month_stats":
         _push_month_stats()
     elif command == "badges":
@@ -48,17 +46,6 @@ def _push_summary() -> None:
         )
     except Exception as e:
         print(f"[Level] summary(deckBrowser) eval error: {e}")
-
-
-def _push_week_stats() -> None:
-    store = level_store.get_store()
-    stats = store.get_week_stats()
-    try:
-        mw.deckBrowser.web.eval(
-            f"window.Lua && window.Lua.onWeekStats({json.dumps(stats)});"
-        )
-    except Exception as e:
-        print(f"[Level] week_stats eval error: {e}")
 
 
 def _push_month_stats() -> None:

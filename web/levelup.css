@@ -292,6 +292,11 @@ html.night, html.dark, body.night, body.dark {
     position: relative;
 }
 
+.lua-chart-bar.today {
+    background: #FF9F0A;
+    box-shadow: 0 0 4px rgba(255, 159, 10, 0.5);
+}
+
 .lua-chart-bar:hover {
     opacity: 0.7;
 }

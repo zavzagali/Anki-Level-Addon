@@ -41,7 +41,7 @@ DEFAULT_STATE = {
 
 
 def _today_int() -> int:
-    now = datetime.now(timezone.utc)
+    now = datetime.now()
     return int(now.strftime("%Y%m%d"))
 
 
@@ -315,7 +315,7 @@ class LevelStore:
         return days
 
     def get_month_stats(self) -> list:
-        """Last 30 days: [{day, xp, cards}]"""
+        """Last 30 days: [{day, xp, cards, isToday}]"""
         today_int = _today_int()
         today_dt = datetime.strptime(str(today_int), "%Y%m%d")
         days = []
@@ -328,6 +328,7 @@ class LevelStore:
                 "day": d.strftime("%d"),
                 "xp": data.get("xp", 0),
                 "cards": data.get("cards", 0),
+                "isToday": day_int == today_int,
             })
         return days
 
