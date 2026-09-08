@@ -46,6 +46,7 @@ html.night, html.dark, body.night, body.dark {
     transform: translateX(-50%);
     z-index: 1000;
     border-radius: 8px;
+    max-width: 350px;
 }
 
 .lua-lb-level {
@@ -229,56 +230,57 @@ html.night, html.dark, body.night, body.dark {
     background: var(--lvl-bg);
     border: 1px solid var(--lvl-border);
     border-radius: 8px;
-    padding: 16px;
-    margin: 12px 0;
+    padding: 10px 12px;
+    margin: 10px auto;
+    max-width: 400px;
 }
 
 .lua-stats-header {
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 600;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
 }
 
 .lua-stats-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 8px;
-    margin-bottom: 16px;
+    gap: 6px;
+    margin-bottom: 10px;
 }
 
 .lua-stat-card {
     text-align: center;
-    padding: 8px 4px;
+    padding: 5px 3px;
     background: rgba(120, 120, 128, 0.06);
-    border-radius: 6px;
+    border-radius: 5px;
 }
 
 .lua-stat-value {
-    font-size: 18px;
+    font-size: 14px;
     font-weight: 700;
 }
 
 .lua-stat-label {
-    font-size: 10px;
+    font-size: 9px;
     color: var(--lvl-subtle);
-    margin-top: 2px;
+    margin-top: 1px;
 }
 
 .lua-chart-container {
-    margin-top: 12px;
+    margin-top: 8px;
 }
 
 .lua-chart-label {
-    font-size: 11px;
+    font-size: 10px;
     color: var(--lvl-subtle);
-    margin-bottom: 6px;
+    margin-bottom: 4px;
 }
 
 .lua-chart-bars {
     display: flex;
     align-items: flex-end;
-    gap: 3px;
-    height: 50px;
+    gap: 2px;
+    height: 35px;
 }
 
 .lua-chart-bar {
@@ -314,34 +316,37 @@ html.night, html.dark, body.night, body.dark {
     background: var(--lvl-bg);
     border: 1px solid var(--lvl-border);
     border-radius: 8px;
-    padding: 14px 16px;
-    margin-bottom: 12px;
+    padding: 8px 12px;
+    margin-bottom: 10px;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .lvlup-panel-inner {
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 10px;
     flex-wrap: wrap;
 }
 
 .lvlup-level {
-    font-size: 20px;
+    font-size: 15px;
     font-weight: 700;
     color: var(--lvl-accent);
 }
 
 .lvlup-title {
-    font-size: 12px;
+    font-size: 11px;
     color: var(--lvl-subtle);
 }
 
 .lvlup-xp-bar {
     flex: 1;
-    min-width: 120px;
-    height: 6px;
+    min-width: 80px;
+    height: 4px;
     background: rgba(120, 120, 128, 0.15);
-    border-radius: 3px;
+    border-radius: 2px;
     overflow: hidden;
     position: relative;
 }
@@ -349,37 +354,37 @@ html.night, html.dark, body.night, body.dark {
 .lvlup-xp-fill {
     height: 100%;
     background: var(--lvl-accent);
-    border-radius: 3px;
+    border-radius: 2px;
     transition: width 0.4s ease, background 0.6s ease;
 }
 
 .lvlup-xp-text {
     position: absolute;
-    top: -16px;
+    top: -14px;
     right: 0;
-    font-size: 10px;
+    font-size: 9px;
     color: var(--lvl-subtle);
 }
 
 .lvlup-stats {
     display: flex;
-    gap: 12px;
-    font-size: 12px;
+    gap: 8px;
+    font-size: 11px;
     color: var(--lvl-subtle);
 }
 
 /* === BADGES GRID === */
 .lua-badges-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-    gap: 6px;
-    margin-top: 10px;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 4px;
+    margin-top: 6px;
 }
 
 .lua-badge-card {
     text-align: center;
-    padding: 10px 4px;
-    border-radius: 6px;
+    padding: 6px 3px;
+    border-radius: 5px;
     background: rgba(120, 120, 128, 0.06);
 }
 
@@ -392,19 +397,19 @@ html.night, html.dark, body.night, body.dark {
 }
 
 .lua-badge-card-icon {
-    font-size: 24px;
-    margin-bottom: 2px;
+    font-size: 20px;
+    margin-bottom: 1px;
 }
 
 .lua-badge-card-name {
-    font-size: 10px;
+    font-size: 9px;
     font-weight: 600;
 }
 
 .lua-badge-card-tier {
-    font-size: 12px;
-    margin-top: 2px;
-    min-height: 14px;
+    font-size: 11px;
+    margin-top: 1px;
+    min-height: 12px;
 }
 
 /* === ANIMATIONS === */

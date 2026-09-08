@@ -1,4 +1,4 @@
-"use strict";(()=>{function o(e){try{window.pycmd(e)}catch(a){console.error("[Level] pycmd failed:",a)}}function c(){o("lua:badges")}function n(e,a){let l=document.getElementById(e);if(!l)return;let i=Math.max(...a.map(t=>t.xp),1);l.innerHTML=`<div class="lua-chart-bars">${a.map(t=>`<div class="lua-chart-bar" style="height:${Math.max(2,t.xp/i*100)}%" data-tooltip="${t.day}: ${t.xp} XP"></div>`).join("")}</div>`}function r(){if(document.getElementById("lua-stats-panel"))return;let e=window.LUA_DATA||{level:1,totalXp:0,streak:0,totalCards:0},a=window.LUA_CONFIG||{showWeekChart:!0,showMonthChart:!0,showBadges:!0},l=window.LUA_WEEK_STATS||[],i=window.LUA_MONTH_STATS||[],t="";a.showWeekChart&&(t+=`
+"use strict";(()=>{function r(e){try{window.pycmd(e)}catch(a){console.error("[Level] pycmd failed:",a)}}function o(){r("lua:badges")}function n(e,a){let l=document.getElementById(e);if(!l)return;let i=Math.max(...a.map(t=>t.xp),1);l.innerHTML=`<div class="lua-chart-bars">${a.map(t=>`<div class="lua-chart-bar" style="height:${Math.max(2,t.xp/i*100)}%" data-tooltip="${t.day}: ${t.xp} XP"></div>`).join("")}</div>`}function c(){if(document.getElementById("lua-stats-panel"))return;let e=window.LUA_DATA||{level:1,totalXp:0,streak:0,totalCards:0},a=window.LUA_CONFIG||{showWeekChart:!0,showMonthChart:!0,showBadges:!0},l=window.LUA_WEEK_STATS||[],i=window.LUA_MONTH_STATS||[],t="";a.showWeekChart&&(t+=`
         <div class="lua-chart-container">
             <div class="lua-chart-label">This Week</div>
             <div id="lua-week-chart"></div>
@@ -31,4 +31,4 @@
             </div>
         </div>
         ${t}
-    `;let d=document.getElementById("lvlup-panel");d&&d.parentNode?d.parentNode.insertBefore(s,d.nextSibling):document.body.appendChild(s),a.showWeekChart&&n("lua-week-chart",l),a.showMonthChart&&n("lua-month-chart",i),a.showBadges&&c()}document.readyState==="loading"?document.addEventListener("DOMContentLoaded",r):r();})();
+    `;let d=document.getElementById("lvlup-panel");d&&d.parentNode?d.parentNode.insertBefore(s,d.nextSibling):document.body.appendChild(s),a.showWeekChart&&n("lua-week-chart",l),a.showMonthChart&&n("lua-month-chart",i),a.showBadges&&o()}document.addEventListener("DOMContentLoaded",c);})();
