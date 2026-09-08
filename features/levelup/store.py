@@ -155,16 +155,23 @@ class LevelStore:
             self._badges = _read(BADGES_KEY, {}) or {}
         return self._badges
 
-    def earn_badge(self, badge_id: str) -> bool:
+    def get_badge_tier(self, badge_id: str) -> int:
+        """Return current tier for a badge (0=none, 1=bronze, 2=silver, 3=gold)."""
         b = self.badges()
-        if badge_id in b:
+        return b.get(badge_id, 0)
+
+    def earn_badge(self, badge_id: str) -> bool:
+        """Earn next tier for a badge. Returns True if earned."""
+        b = self.badges()
+        current = b.get(badge_id, 0)
+        if current >= 3:
             return False
-        b[badge_id] = _today_int()
+        b[badge_id] = current + 1
         self._badges = b
         self._touch("badges")
         return True
 
-    def award_xp(self, ease: int, answer_time_ms: int) -> dict:
+    def award_xp(self, ease: int, answer_time_ms: int, is_new: bool = False) -> dict:
         """Main entry: called on every card answer."""
         s = self.state()
         today = _today_int()
@@ -207,6 +214,12 @@ class LevelStore:
         )
 
         earned = xp_result["total"]
+        if is_new:
+            earned += 2
+            xp_result["new_card_bonus"] = 2
+        else:
+            xp_result["new_card_bonus"] = 0
+
         s["xp"] += earned
         s["totalXp"] = max(0, s["totalXp"] + earned)
         s["todayXp"] += earned

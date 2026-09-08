@@ -32,7 +32,9 @@ def _on_answer_card(reviewer: Reviewer, card, ease: int) -> None:
     answer_time_ms = int((now - _last_answer_time) * 1000) if _last_answer_time else 10000
     answer_time_ms = max(answer_time_ms, 0)
 
-    result = store.award_xp(ease, answer_time_ms)
+    is_new = card.queue == 0 or card.type == 0
+
+    result = store.award_xp(ease, answer_time_ms, is_new=is_new)
     new_badges = badge_module.check_badges(store)
 
     summary = store.get_summary()
@@ -48,6 +50,7 @@ def _on_answer_card(reviewer: Reviewer, card, ease: int) -> None:
         "xpForLevel": result["xpForLevel"],
         "badges": new_badges,
         "xpDetail": result["xp"],
+        "isNew": is_new,
         "summary": summary,
     }
 

@@ -404,10 +404,10 @@ html.night, html.dark, body.night, body.dark {
     font-weight: 600;
 }
 
-.lua-badge-card-desc {
-    font-size: 9px;
-    color: var(--lvl-subtle);
-    margin-top: 1px;
+.lua-badge-card-tier {
+    font-size: 12px;
+    margin-top: 2px;
+    min-height: 14px;
 }
 
 /* === ANIMATIONS === */

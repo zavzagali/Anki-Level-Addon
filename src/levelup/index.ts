@@ -36,6 +36,7 @@ export interface XpAwardResult {
     xpForLevel: number;
     badges: BadgeResult[];
     xpDetail: XpDetail;
+    isNew: boolean;
     summary: LevelUpSummary;
 }
 
@@ -46,6 +47,7 @@ export interface XpDetail {
     combo_mult: number;
     speed_bonus: number;
     daily_bonus_pct: number;
+    new_card_bonus: number;
 }
 
 export interface BadgeResult {
@@ -53,6 +55,9 @@ export interface BadgeResult {
     name: string;
     desc: string;
     icon: string;
+    tier: number;
+    tierIcon: string;
+    tierName: string;
 }
 
 export interface BadgeDef {
@@ -60,8 +65,10 @@ export interface BadgeDef {
     name: string;
     desc: string;
     icon: string;
+    tier: number;
+    tierIcon: string;
+    tierName: string;
     earned: boolean;
-    earnedDay?: number;
 }
 
 export interface DayStat {
@@ -145,8 +152,8 @@ function showBadgeToast(badge: BadgeResult): void {
     toast.innerHTML = `
         <span class="lua-badge-icon">${badge.icon}</span>
         <span class="lua-badge-info">
-            <span class="lua-badge-label">Badge earned!</span>
-            <span class="lua-badge-name">${badge.name}</span>
+            <span class="lua-badge-label">${badge.tierName} Badge!</span>
+            <span class="lua-badge-name">${badge.name} ${badge.tierIcon}</span>
         </span>
     `;
     document.body.appendChild(toast);
@@ -198,12 +205,13 @@ function renderBadges(badges: BadgeDef[]): void {
     if (!grid) return;
 
     grid.innerHTML = badges.map(b => {
-        const cls = b.earned ? "earned" : "locked";
+        const cls = b.tier > 0 ? "earned" : "locked";
+        const tierDisplay = b.tier > 0 ? Array(b.tier).fill(b.tierIcon).join("") : "";
         return `
             <div class="lua-badge-card ${cls}">
                 <div class="lua-badge-card-icon">${b.icon}</div>
                 <div class="lua-badge-card-name">${b.name}</div>
-                <div class="lua-badge-card-desc">${b.desc}</div>
+                <div class="lua-badge-card-tier">${tierDisplay}</div>
             </div>
         `;
     }).join("");
@@ -222,7 +230,9 @@ const bridge: LuaBridge = {
         const detail = result.xpDetail;
         let toastText = `+${result.xp} XP`;
 
-        if (detail.streak_mult > 1) {
+        if (result.isNew) {
+            toastText += " (new card)";
+        } else if (detail.streak_mult > 1) {
             toastText += ` (streak x${detail.streak_mult})`;
         } else if (detail.combo_mult > 1) {
             toastText += ` (combo x${detail.combo_mult})`;
