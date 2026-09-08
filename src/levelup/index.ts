@@ -86,6 +86,7 @@ export interface LuaBridge {
     onWeekStats(stats: DayStat[]): void;
     onMonthStats(stats: DayStat[]): void;
     onBadges(badges: BadgeDef[]): void;
+    updateReviewerBar(xp: number, combo: number): void;
 }
 
 function pycmd(cmd: string): void {
@@ -218,6 +219,48 @@ function renderBadges(badges: BadgeDef[]): void {
     }).join("");
 }
 
+function injectReviewerCss(): void {
+    if (document.getElementById("lvl-reviewer-css")) return;
+    const style = document.createElement("style");
+    style.id = "lvl-reviewer-css";
+    style.textContent = `
+        #lvl-reviewer-bar {
+            position: fixed; bottom: 0; left: 0; right: 0; z-index: 999;
+            display: flex; align-items: center; justify-content: center; gap: 18px;
+            padding: 8px 16px;
+            background: var(--lvl-bg, rgba(30,30,30,0.92));
+            border-top: 1px solid var(--lvl-border, rgba(84,84,88,0.35));
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+            font-size: 13px; color: var(--lvl-text, #f2f2f7);
+            transition: opacity 0.3s ease;
+        }
+        #lvl-reviewer-bar .lvl-rb-xp {
+            font-weight: 700; font-size: 15px; color: var(--lvl-accent, #0A84FF);
+        }
+        #lvl-reviewer-bar .lvl-rb-combo {
+            font-weight: 600; font-size: 13px; color: var(--lvl-subtle, #98989d);
+        }
+        #lvl-reviewer-bar .lvl-rb-combo.active {
+            color: #FF9F0A;
+        }
+    `;
+    document.head.appendChild(style);
+}
+
+function updateReviewerBar(xp: number, combo: number): void {
+    injectReviewerCss();
+    let bar = document.getElementById("lvl-reviewer-bar");
+    if (!bar) {
+        bar = document.createElement("div");
+        bar.id = "lvl-reviewer-bar";
+        document.body.appendChild(bar);
+    }
+    const comboClass = combo > 1 ? "lvl-rb-combo active" : "lvl-rb-combo";
+    const comboText = combo > 1 ? `\u{1F525} ${combo}x Combo` : `\u{1F525} 1x`;
+    bar.innerHTML = `<span class="lvl-rb-xp">+${xp} XP</span><span class="${comboClass}">${comboText}</span>`;
+    bar.style.opacity = "1";
+}
+
 const bridge: LuaBridge = {
     onSummary(summary: LevelUpSummary): void {
         currentData = summary;
@@ -242,6 +285,7 @@ const bridge: LuaBridge = {
         }
 
         showToast(toastText);
+        updateReviewerBar(result.xp, currentData.combo);
 
         if (result.badges) {
             result.badges.forEach((b: BadgeResult, i: number) => {
@@ -268,6 +312,10 @@ const bridge: LuaBridge = {
 
     onBadges(badges: BadgeDef[]): void {
         renderBadges(badges);
+    },
+
+    updateReviewerBar(xp: number, combo: number): void {
+        updateReviewerBar(xp, combo);
     },
 };
 

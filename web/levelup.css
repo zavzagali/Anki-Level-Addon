@@ -425,3 +425,47 @@ html.night, html.dark, body.night, body.dark {
     from { opacity: 0; transform: translateX(-50%) translateY(10px); }
     to { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
+
+/* === REVIEWER BOTTOM BAR === */
+#lvl-reviewer-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    padding: 8px 16px;
+    background: var(--lvl-bg);
+    border-top: 1px solid var(--lvl-border);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+    font-size: 13px;
+    color: var(--lvl-text);
+}
+
+#lvl-reviewer-bar .lvl-rb-xp {
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--lvl-accent);
+}
+
+#lvl-reviewer-bar .lvl-rb-xp.negative {
+    color: #FF453A;
+}
+
+#lvl-reviewer-bar .lvl-rb-combo {
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--lvl-subtle);
+}
+
+#lvl-reviewer-bar .lvl-rb-combo.active {
+    color: #FF9F0A;
+}
+
+#lvl-reviewer-bar .lvl-rb-combo.broken {
+    color: #FF453A;
+    font-style: italic;
+}
