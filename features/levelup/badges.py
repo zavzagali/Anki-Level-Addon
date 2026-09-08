@@ -11,8 +11,6 @@ BADGES = {
         "icon": "🎯",
         "tiers": [
             lambda s: s.get("totalCards", 0) >= 1,
-            lambda s: s.get("totalCards", 0) >= 50,
-            lambda s: s.get("totalCards", 0) >= 200,
         ],
     },
     "cards_100": {
@@ -20,9 +18,9 @@ BADGES = {
         "desc": "Memorize cards",
         "icon": "🧠",
         "tiers": [
-            lambda s: s.get("totalCards", 0) >= 100,
-            lambda s: s.get("totalCards", 0) >= 500,
-            lambda s: s.get("totalCards", 0) >= 2000,
+            lambda s: s.get("totalCards", 0) >= 1000,
+            lambda s: s.get("totalCards", 0) >= 5000,
+            lambda s: s.get("totalCards", 0) >= 20000,
         ],
     },
     "cards_1000": {
@@ -42,7 +40,6 @@ BADGES = {
         "tiers": [
             lambda s: s.get("bestStreak", 0) >= 3,
             lambda s: s.get("bestStreak", 0) >= 14,
-            lambda s: s.get("bestStreak", 0) >= 30,
         ],
     },
     "streak_7": {
@@ -51,8 +48,8 @@ BADGES = {
         "icon": "⭐",
         "tiers": [
             lambda s: s.get("bestStreak", 0) >= 7,
-            lambda s: s.get("bestStreak", 0) >= 28,
-            lambda s: s.get("bestStreak", 0) >= 60,
+            lambda s: s.get("bestStreak", 0) >= 14,
+            lambda s: s.get("bestStreak", 0) >= 21,
         ],
     },
     "streak_30": {
@@ -67,11 +64,9 @@ BADGES = {
     },
     "streak_100": {
         "name": "Unstoppable",
-        "desc": "Study streak",
+        "desc": "Study 365 days in a row",
         "icon": "💎",
         "tiers": [
-            lambda s: s.get("bestStreak", 0) >= 100,
-            lambda s: s.get("bestStreak", 0) >= 200,
             lambda s: s.get("bestStreak", 0) >= 365,
         ],
     },
@@ -164,7 +159,7 @@ def check_badges(store) -> list:
     earned = []
     for badge_id, badge in BADGES.items():
         current_tier = store.get_badge_tier(badge_id)
-        if current_tier >= MAX_TIER:
+        if current_tier >= len(badge["tiers"]):
             continue
         if badge["tiers"][current_tier](s):
             if store.earn_badge(badge_id):
