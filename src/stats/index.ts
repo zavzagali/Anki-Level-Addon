@@ -42,34 +42,34 @@ function init(): void {
     panel.id = "lua-stats-panel";
     panel.className = "lua-stats-panel";
     panel.innerHTML = `
-        <div class="lua-stats-header">\u{1F4CA} Statistics</div>
+        <div class="lua-stats-header">Statistics</div>
         <div class="lua-stats-grid">
             <div class="lua-stat-card">
-                <div class="lua-stat-value" style="color:var(--lua-accent)">${data.level}</div>
+                <div class="lua-stat-value">${data.level}</div>
                 <div class="lua-stat-label">Level</div>
             </div>
             <div class="lua-stat-card">
-                <div class="lua-stat-value" style="color:var(--lua-purple)">${data.totalXp}</div>
+                <div class="lua-stat-value">${data.totalXp}</div>
                 <div class="lua-stat-label">Total XP</div>
             </div>
             <div class="lua-stat-card">
-                <div class="lua-stat-value" style="color:var(--lua-orange)">\u{1F525} ${data.streak}</div>
+                <div class="lua-stat-value">${data.streak}</div>
                 <div class="lua-stat-label">Streak</div>
             </div>
             <div class="lua-stat-card">
-                <div class="lua-stat-value" style="color:var(--lua-green)">${data.totalCards}</div>
-                <div class="lua-stat-label">Total Cards</div>
+                <div class="lua-stat-value">${data.totalCards}</div>
+                <div class="lua-stat-label">Cards</div>
             </div>
         </div>
         <div class="lua-chart-container">
             <div class="lua-chart-label">This Week</div>
             <div id="lua-week-chart"></div>
         </div>
-        <div class="lua-chart-container" style="margin-top:12px">
+        <div class="lua-chart-container">
             <div class="lua-chart-label">This Month</div>
             <div id="lua-month-chart"></div>
         </div>
-        <div class="lua-chart-container" style="margin-top:16px">
+        <div class="lua-chart-container">
             <div class="lua-chart-label">Badges</div>
             <div id="lua-badges-grid" class="lua-badges-grid"></div>
         </div>

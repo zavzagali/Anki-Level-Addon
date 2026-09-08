@@ -126,13 +126,10 @@ function updateHud(): void {
     if (todayEl) todayEl.textContent = `${d.todayCards} today`;
 }
 
-function showToast(text: string, cls?: string): void {
+function showToast(text: string): void {
     const toast = document.createElement("div");
-    toast.className = "lua-xp-toast" + (cls ? " " + cls : "");
+    toast.className = "lua-xp-toast";
     toast.textContent = text;
-    toast.style.left = "50%";
-    toast.style.top = "50%";
-    toast.style.transform = "translate(-50%, -50%)";
     document.body.appendChild(toast);
     setTimeout(() => toast.remove(), 1800);
 }
@@ -169,64 +166,13 @@ function showLevelUpModal(level: number, title: string): void {
             overlay.remove();
         }
     });
-
-    try { (window as any).LUA_CONFETTI(); } catch {}
-}
-
-function confetti(): void {
-    const canvas = document.createElement("canvas");
-    canvas.style.cssText = "position:fixed;inset:0;z-index:4000;pointer-events:none;";
-    document.body.appendChild(canvas);
-    const ctx = canvas.getContext("2d")!;
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    const colors = ["#007AFF", "#34C759", "#FF9500", "#FF3B30", "#AF52DE", "#FFD60A"];
-    const pieces: Array<{
-        x: number; y: number; vx: number; vy: number;
-        w: number; h: number; color: string; rot: number; vr: number;
-    }> = [];
-
-    for (let i = 0; i < 80; i++) {
-        pieces.push({
-            x: Math.random() * canvas.width,
-            y: -10 - Math.random() * 200,
-            vx: (Math.random() - 0.5) * 6,
-            vy: Math.random() * 4 + 2,
-            w: Math.random() * 10 + 4,
-            h: Math.random() * 6 + 3,
-            color: colors[Math.floor(Math.random() * colors.length)],
-            rot: Math.random() * Math.PI * 2,
-            vr: (Math.random() - 0.5) * 0.3,
-        });
-    }
-
-    let frame = 0;
-    function draw() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        for (const p of pieces) {
-            p.x += p.vx;
-            p.y += p.vy;
-            p.vy += 0.08;
-            p.rot += p.vr;
-            ctx.save();
-            ctx.translate(p.x, p.y);
-            ctx.rotate(p.rot);
-            ctx.fillStyle = p.color;
-            ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
-            ctx.restore();
+    document.addEventListener("keydown", function onKey(e: KeyboardEvent) {
+        if (e.key === "Escape") {
+            overlay.remove();
+            document.removeEventListener("keydown", onKey);
         }
-        frame++;
-        if (frame < 120) {
-            requestAnimationFrame(draw);
-        } else {
-            canvas.remove();
-        }
-    }
-    draw();
+    });
 }
-
-(window as any).LUA_CONFETTI = confetti;
 
 function renderChart(containerId: string, stats: DayStat[]): void {
     const container = document.getElementById(containerId);
@@ -270,24 +216,14 @@ const bridge: LuaBridge = {
 
         const detail = result.xpDetail;
         let toastText = `+${result.xp} XP`;
-        let toastCls = "";
 
         if (detail.streak_mult > 1) {
-            toastCls = "streak-bonus";
+            toastText += ` (streak x${detail.streak_mult})`;
         } else if (detail.combo_mult > 1) {
-            toastCls = "combo";
-        } else if (detail.speed_bonus > 0 || detail.daily_bonus_pct > 0) {
-            toastCls = "bonus";
+            toastText += ` (combo x${detail.combo_mult})`;
         }
 
-        showToast(toastText, toastCls);
-
-        if (detail.streak_mult > 1) {
-            setTimeout(() => showToast(`\u{1F525} Streak Bonus: x${detail.streak_mult}`, "streak-bonus"), 400);
-        }
-        if (detail.combo_mult > 1) {
-            setTimeout(() => showToast(`\u26A1 Combo: x${detail.combo_mult}`, "combo"), 400);
-        }
+        showToast(toastText);
 
         if (result.badges) {
             result.badges.forEach((b: BadgeResult, i: number) => {
