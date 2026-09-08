@@ -1,6 +1,6 @@
 {
     "name": "levelup-anki",
-    "version": "0.2",
+    "version": "1.0",
     "private": true,
     "description": "TypeScript sources for Level add-on",
     "scripts": {
