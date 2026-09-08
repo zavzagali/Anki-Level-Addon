@@ -40,14 +40,14 @@ def _push_summary() -> None:
         mw.reviewer.web.eval(
             f"window.Lua && window.Lua.onSummary({json.dumps(summary)});"
         )
-    except Exception:
-        pass
+    except Exception as e:
+        print(f"[Level] summary(reviewer) eval error: {e}")
     try:
         mw.deckBrowser.web.eval(
             f"window.Lua && window.Lua.onSummary({json.dumps(summary)});"
         )
-    except Exception:
-        pass
+    except Exception as e:
+        print(f"[Level] summary(deckBrowser) eval error: {e}")
 
 
 def _push_week_stats() -> None:
@@ -57,8 +57,8 @@ def _push_week_stats() -> None:
         mw.deckBrowser.web.eval(
             f"window.Lua && window.Lua.onWeekStats({json.dumps(stats)});"
         )
-    except Exception:
-        pass
+    except Exception as e:
+        print(f"[Level] week_stats eval error: {e}")
 
 
 def _push_month_stats() -> None:
@@ -68,8 +68,8 @@ def _push_month_stats() -> None:
         mw.deckBrowser.web.eval(
             f"window.Lua && window.Lua.onMonthStats({json.dumps(stats)});"
         )
-    except Exception:
-        pass
+    except Exception as e:
+        print(f"[Level] month_stats eval error: {e}")
 
 
 from ..features.levelup.badges import TIER_ICONS, TIER_NAMES
@@ -101,8 +101,9 @@ def _apply_setting(payload: str) -> None:
     if not isinstance(data, dict):
         return
     config = conf.get()
-    for key in ("showHud", "showStatsPanel", "showLevelUpModal",
-                "showBadges", "hudCompact", "soundEnabled", "confettiEnabled"):
+    for key in ("showHud", "showStatsPanel", "showWeekChart", "showMonthChart",
+                "showLevelUpModal", "showBadges", "hudCompact",
+                "soundEnabled", "confettiEnabled"):
         if key in data:
             config[key] = bool(data[key])
     if "dailyGoal" in data:

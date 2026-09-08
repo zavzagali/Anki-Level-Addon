@@ -42,6 +42,21 @@ def _summary() -> dict:
         }
 
 
+def _week_stats() -> list:
+    try:
+        return level_store.get_store().get_week_stats()
+    except Exception:
+        return [{"day": d, "xp": 0, "cards": 0, "correct": 0}
+                for d in ["09/02","09/03","09/04","09/05","09/06","09/07","09/08"]]
+
+
+def _month_stats() -> list:
+    try:
+        return level_store.get_store().get_month_stats()
+    except Exception:
+        return [{"day": str(i), "xp": 0, "cards": 0} for i in range(1, 31)]
+
+
 def _panel_html(s: dict) -> str:
     pct = 0.0
     if s.get("xpForLevel", 0) > 0:
@@ -78,7 +93,17 @@ def on_webview_will_set_content(web_content, context) -> None:
     summary = _summary()
 
     web_content.head += f'<link rel="stylesheet" href="{_asset("levelup.css")}">'
+    week_stats = _week_stats() if config.get("showWeekChart", True) else []
+    month_stats = _month_stats() if config.get("showMonthChart", True) else []
+    lua_config = {
+        "showWeekChart": config.get("showWeekChart", True),
+        "showMonthChart": config.get("showMonthChart", True),
+        "showBadges": config.get("showBadges", True),
+    }
     web_content.head += f'<script>window.LUA_DATA = {json.dumps(summary)};</script>'
+    web_content.head += f'<script>window.LUA_CONFIG = {json.dumps(lua_config)};</script>'
+    web_content.head += f'<script>window.LUA_WEEK_STATS = {json.dumps(week_stats)};</script>'
+    web_content.head += f'<script>window.LUA_MONTH_STATS = {json.dumps(month_stats)};</script>'
     web_content.head += f'<script src="{_asset("shared.js")}"></script>'
     web_content.head += f'<script src="{_asset("levelup.js")}"></script>'
     web_content.body += _panel_html(summary)

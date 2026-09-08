@@ -5,6 +5,8 @@ from aqt import mw
 DEFAULTS = {
     "showHud": True,
     "showStatsPanel": True,
+    "showWeekChart": True,
+    "showMonthChart": True,
     "showLevelUpModal": True,
     "showBadges": True,
     "dailyGoal": 50,

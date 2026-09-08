@@ -1,6 +1,8 @@
 {
     "showHud": true,
     "showStatsPanel": true,
+    "showWeekChart": true,
+    "showMonthChart": true,
     "showLevelUpModal": true,
     "showBadges": true,
     "dailyGoal": 50,
