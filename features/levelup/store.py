@@ -218,13 +218,13 @@ class LevelStore:
 
         s["bestStreak"] = max(s["bestStreak"], s["streak"])
 
-        day_log = self.log(today)
+        day_log = self.log(int(datetime.now(timezone.utc).strftime("%Y")))
         day_log[today] = {
             "xp": day_log.get(today, {}).get("xp", 0) + earned,
             "cards": day_log.get(today, {}).get("cards", 0) + 1,
             "correct": day_log.get(today, {}).get("correct", 0) + (1 if ease >= 3 else 0),
         }
-        self._touch(today)
+        self._touch(int(datetime.now(timezone.utc).strftime("%Y")))
 
         self._state = s
         self._save_state()
@@ -246,7 +246,7 @@ class LevelStore:
     def get_summary(self) -> dict:
         s = self.state()
         today = _today_int()
-        day_log = self.log(today)
+        day_log = self.log(int(datetime.now(timezone.utc).strftime("%Y")))
         today_data = day_log.get(today, {})
         return {
             "level": s["level"],
@@ -261,6 +261,8 @@ class LevelStore:
             "todayCards": today_data.get("cards", 0),
             "todayCorrect": today_data.get("correct", 0),
             "combo": s["combo"],
+            "bestEasyCombo": s["bestEasyCombo"],
+            "dailyGoal": conf.get().get("dailyGoal", 50),
             "badges": self.badges(),
         }
 

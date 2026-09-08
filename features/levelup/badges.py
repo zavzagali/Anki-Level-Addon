@@ -71,7 +71,7 @@ BADGES = {
         "name": "Goal Hunter",
         "desc": "Complete daily goal",
         "icon": "🎯",
-        "check": lambda s: s.get("todayCards", 0) >= 50,
+        "check": lambda s: s.get("todayCards", 0) >= s.get("dailyGoal", 50),
     },
     "perfect_day": {
         "name": "Perfect Day",
