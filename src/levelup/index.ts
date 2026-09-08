@@ -145,7 +145,7 @@ function showToast(text: string): void {
     toast.className = "lua-xp-toast";
     toast.textContent = text;
     document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 1800);
+    setTimeout(() => toast.remove(), 2500);
 }
 
 function showBadgeToast(badge: BadgeResult): void {
