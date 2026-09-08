@@ -31,35 +31,32 @@ html.night, html.dark, body.night, body.dark {
 #lua-level-bar {
     background: var(--lvl-bg);
     border: 1px solid var(--lvl-border);
-    padding: 10px 16px;
+    padding: 6px 14px;
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 10px;
     font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
-    font-size: 13px;
+    font-size: 12px;
     color: var(--lvl-text);
     user-select: none;
     margin: 0 0 12px 0;
     position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
     z-index: 1000;
-    border-radius: 0;
-    border-left: none;
-    border-right: none;
-    border-bottom: none;
+    border-radius: 8px;
 }
 
 .lua-lb-level {
     font-weight: 700;
-    font-size: 16px;
+    font-size: 13px;
     color: var(--lvl-accent);
     white-space: nowrap;
 }
 
 .lua-lb-title {
-    font-size: 12px;
+    font-size: 11px;
     color: var(--lvl-subtle);
     white-space: nowrap;
 }
@@ -74,11 +71,11 @@ html.night, html.dark, body.night, body.dark {
 
 .lua-lb-xp-bar {
     flex: 1;
-    height: 8px;
+    height: 5px;
     background: rgba(120, 120, 128, 0.15);
-    border-radius: 4px;
+    border-radius: 3px;
     overflow: hidden;
-    min-width: 80px;
+    min-width: 60px;
 }
 
 .lua-lb-xp-fill {
@@ -89,20 +86,20 @@ html.night, html.dark, body.night, body.dark {
 }
 
 .lua-lb-xp-text {
-    font-size: 12px;
+    font-size: 10px;
     font-weight: 600;
     color: var(--lvl-subtle);
     white-space: nowrap;
 }
 
 .lua-lb-streak {
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 600;
     white-space: nowrap;
 }
 
 .lua-lb-cards {
-    font-size: 12px;
+    font-size: 11px;
     color: var(--lvl-subtle);
     white-space: nowrap;
 }
@@ -429,25 +426,26 @@ html.night, html.dark, body.night, body.dark {
 /* === REVIEWER BOTTOM BAR === */
 #lvl-reviewer-bar {
     position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
     z-index: 999;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 18px;
-    padding: 8px 16px;
+    gap: 10px;
+    padding: 5px 14px;
     background: var(--lvl-bg);
-    border-top: 1px solid var(--lvl-border);
+    border: 1px solid var(--lvl-border);
+    border-radius: 8px;
     font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
-    font-size: 13px;
+    font-size: 12px;
     color: var(--lvl-text);
 }
 
 #lvl-reviewer-bar .lvl-rb-xp {
     font-weight: 700;
-    font-size: 15px;
+    font-size: 13px;
     color: var(--lvl-accent);
 }
 
@@ -457,7 +455,7 @@ html.night, html.dark, body.night, body.dark {
 
 #lvl-reviewer-bar .lvl-rb-combo {
     font-weight: 600;
-    font-size: 13px;
+    font-size: 11px;
     color: var(--lvl-subtle);
 }
 
