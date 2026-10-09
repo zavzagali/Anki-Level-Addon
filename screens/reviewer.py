@@ -1,7 +1,6 @@
 """Reviewer chrome — handle card answers."""
 
 import json
-import os
 import time
 
 from aqt import gui_hooks, mw
@@ -13,8 +12,33 @@ from ..features.levelup import badges as badge_module
 
 
 _last_answer_time = 0.0
-_css_injected = False
 _fade_timer = None
+_pending_feedback = None  # (xp, combo) shown on next question so it survives DOM reload
+
+
+# Inline CSS — no external file dependency. External <link> to levelup.css
+# could 404 (wrong addon id) or be wiped on card change, leaving the bar
+# unstyled at the top-left as plain text. Inline <style> is re-injected
+# on every feedback, so positioning is guaranteed.
+_INLINE_CSS = """
+#lvl-reviewer-bar {
+    position: fixed; bottom: 12px; left: 50%; transform: translateX(-50%);
+    z-index: 999; display: flex; align-items: center; justify-content: center;
+    gap: 10px; padding: 5px 14px;
+    background: var(--lvl-bg, rgba(30,30,30,0.92));
+    border: 1px solid var(--lvl-border, rgba(84,84,88,0.35));
+    border-radius: 8px;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+    font-size: 12px; color: var(--lvl-text, #f2f2f7);
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+#lvl-reviewer-bar .lvl-rb-xp { font-weight: 700; font-size: 13px; color: var(--lvl-accent, #0A84FF); }
+#lvl-reviewer-bar .lvl-rb-xp.negative { color: #FF453A; }
+#lvl-reviewer-bar .lvl-rb-combo { font-weight: 600; font-size: 11px; color: var(--lvl-subtle, #98989d); }
+#lvl-reviewer-bar .lvl-rb-combo.active { color: #FF9F0A; }
+#lvl-reviewer-bar .lvl-rb-combo.broken { color: #FF453A; font-style: italic; }
+"""
 
 
 def _eval(js: str) -> None:
@@ -26,58 +50,66 @@ def _eval(js: str) -> None:
         print(f"[Level] reviewer eval error: {e}")
 
 
-def _inject_css() -> None:
-    global _css_injected
-    if _css_injected:
-        return
-    _css_injected = True
-    addon_path = os.path.dirname(os.path.dirname(__file__))
-    addon_package = mw.addonManager.addonFromModule(__name__.split(".")[0])
-    web_root = f"/_addons/{addon_package}/web"
-    try:
-        version = int(os.path.getmtime(os.path.join(addon_path, "web", "levelup.css")))
-    except OSError:
-        version = 0
-    css_url = f"{web_root}/levelup.css?v={version}"
-    _eval(
-        'if(!document.getElementById("lvl-reviewer-css-link")){'
-        'var s=document.createElement("link");'
-        's.id="lvl-reviewer-css-link";s.rel="stylesheet";'
-        f's.href="{css_url}";' 'document.head.appendChild(s);}'
+def _ensure_style_js() -> str:
+    css_json = json.dumps(_INLINE_CSS)
+    return (
+        "(function(){"
+        "var s=document.getElementById('lvl-reviewer-css-inline');"
+        "if(!s){s=document.createElement('style');s.id='lvl-reviewer-css-inline';"
+        f"s.textContent={css_json};document.head.appendChild(s);"
+        "}"
+        "})()"
     )
 
 
-def _update_bar(xp: int, combo: int) -> None:
-    global _fade_timer
-
-    if _fade_timer is not None:
-        _fade_timer.stop()
-        _fade_timer = None
-
+def _feedback_js(xp: int, combo: int) -> str:
     xp_cls = "lvl-rb-xp negative" if xp < 0 else "lvl-rb-xp"
     xp_txt = f"{xp} XP" if xp < 0 else f"+{xp} XP"
 
     if combo > 1:
         combo_cls = "lvl-rb-combo active"
-        combo_txt = f"\\u{{1F525}} {combo}x Combo"
+        combo_txt = f"\U0001f525 {combo}x Combo"
     elif combo == 1:
         combo_cls = "lvl-rb-combo"
-        combo_txt = "\\u{{1F525}} 1x"
+        combo_txt = "\U0001f525 1x"
     else:
         combo_cls = "lvl-rb-combo broken"
-        combo_txt = "\\u{1F6AB} Combo broken"
+        combo_txt = "\U0001f6ab Combo broken"
 
-    js = (
+    # JSON-encode dynamic strings so quotes/emoji survive JS injection.
+    payload = json.dumps({
+        "xpCls": xp_cls, "xpTxt": xp_txt,
+        "comboCls": combo_cls, "comboTxt": combo_txt,
+    })
+    css_json = json.dumps(_INLINE_CSS)
+
+    return (
         "(function(){"
+        "var P=" + payload + ";"
+        # style first — guarantees bar styling even on fresh card DOM
+        "var s=document.getElementById('lvl-reviewer-css-inline');"
+        "if(!s){s=document.createElement('style');s.id='lvl-reviewer-css-inline';"
+        f"s.textContent={css_json};"
+        "(document.head||document.documentElement).appendChild(s);}"
+        # bottom pill bar only
         "var b=document.getElementById('lvl-reviewer-bar');"
         "if(!b){b=document.createElement('div');b.id='lvl-reviewer-bar';document.body.appendChild(b);}"
-        f"b.innerHTML='<span class=\"{xp_cls}\">{xp_txt}</span>"
-        f"<span class=\"{combo_cls}\">{combo_txt}</span>';"
+        "b.innerHTML='<span class=\"'+P.xpCls+'\">'+P.xpTxt+'</span>'"
+        "+'<span class=\"'+P.comboCls+'\">'+P.comboTxt+'</span>';"
         "b.style.opacity='1';"
         "})()"
     )
-    _eval(js)
 
+
+def _show_feedback(xp: int, combo: int) -> None:
+    _eval(_feedback_js(xp, combo))
+    global _fade_timer
+    if _fade_timer is not None:
+        try:
+            _fade_timer.stop()
+        except Exception:
+            pass
+        _fade_timer = None
     if combo == 0:
         _fade_timer = QTimer()
         _fade_timer.setSingleShot(True)
@@ -97,6 +129,7 @@ def _fade_bar() -> None:
 
 
 def _on_answer_card(reviewer: Reviewer, card, ease: int) -> None:
+    global _pending_feedback
     if mw.col is None:
         return
 
@@ -134,14 +167,14 @@ def _on_answer_card(reviewer: Reviewer, card, ease: int) -> None:
         j = f"if(typeof window.Lua!=='undefined')window.Lua.onLevelUp({result['level']},{json.dumps(result['newTitle'])});"
         QTimer.singleShot(300, lambda x=j: _eval(x))
 
+    # Reviewer webview has no window.Lua bundle and its DOM is rebuilt on
+    # the next card, so: remember feedback, show now, re-show after
+    # navigation, and re-show again when the next question is displayed.
     xp_val = result["earned"]
     combo_val = summary["combo"]
-    QTimer.singleShot(200, lambda x=xp_val, c=combo_val: _do_bar(x, c))
-
-
-def _do_bar(xp: int, combo: int) -> None:
-    _inject_css()
-    _update_bar(xp, combo)
+    _pending_feedback = (xp_val, combo_val)
+    _show_feedback(xp_val, combo_val)
+    QTimer.singleShot(350, lambda x=xp_val, c=combo_val: _show_feedback(x, c))
 
 
 def _on_show_answer(card) -> None:
@@ -149,6 +182,19 @@ def _on_show_answer(card) -> None:
     _last_answer_time = time.time()
 
 
+def _on_show_question(*args) -> None:
+    # Fired when the next card's DOM is ready — guarantees the bar
+    # lands on visible content (card change wipes injected DOM).
+    global _pending_feedback
+    _eval(_ensure_style_js())
+    if _pending_feedback is not None:
+        xp_val, combo_val = _pending_feedback
+        _pending_feedback = None
+        _show_feedback(xp_val, combo_val)
+
+
 def install() -> None:
     gui_hooks.reviewer_did_show_answer.append(_on_show_answer)
     gui_hooks.reviewer_did_answer_card.append(_on_answer_card)
+    if hasattr(gui_hooks, "reviewer_did_show_question"):
+        gui_hooks.reviewer_did_show_question.append(_on_show_question)

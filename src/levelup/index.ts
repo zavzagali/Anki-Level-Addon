@@ -224,23 +224,31 @@ function injectReviewerCss(): void {
     style.id = "lvl-reviewer-css";
     style.textContent = `
         #lvl-reviewer-bar {
-            position: fixed; bottom: 0; left: 0; right: 0; z-index: 999;
-            display: flex; align-items: center; justify-content: center; gap: 18px;
-            padding: 8px 16px;
+            position: fixed; bottom: 12px; left: 50%; transform: translateX(-50%);
+            z-index: 999; display: flex; align-items: center; justify-content: center;
+            gap: 10px; padding: 5px 14px;
             background: var(--lvl-bg, rgba(30,30,30,0.92));
-            border-top: 1px solid var(--lvl-border, rgba(84,84,88,0.35));
+            border: 1px solid var(--lvl-border, rgba(84,84,88,0.35));
+            border-radius: 8px;
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
-            font-size: 13px; color: var(--lvl-text, #f2f2f7);
+            font-size: 12px; color: var(--lvl-text, #f2f2f7);
             transition: opacity 0.3s ease;
+            pointer-events: none;
         }
         #lvl-reviewer-bar .lvl-rb-xp {
-            font-weight: 700; font-size: 15px; color: var(--lvl-accent, #0A84FF);
+            font-weight: 700; font-size: 13px; color: var(--lvl-accent, #0A84FF);
+        }
+        #lvl-reviewer-bar .lvl-rb-xp.negative {
+            color: #FF453A;
         }
         #lvl-reviewer-bar .lvl-rb-combo {
-            font-weight: 600; font-size: 13px; color: var(--lvl-subtle, #98989d);
+            font-weight: 600; font-size: 11px; color: var(--lvl-subtle, #98989d);
         }
         #lvl-reviewer-bar .lvl-rb-combo.active {
             color: #FF9F0A;
+        }
+        #lvl-reviewer-bar .lvl-rb-combo.broken {
+            color: #FF453A; font-style: italic;
         }
     `;
     document.head.appendChild(style);
@@ -254,10 +262,19 @@ function updateReviewerBar(xp: number, combo: number): void {
         bar.id = "lvl-reviewer-bar";
         document.body.appendChild(bar);
     }
-    const comboClass = combo > 1 ? "lvl-rb-combo active" : "lvl-rb-combo";
-    const comboText = combo > 1 ? `\u{1F525} ${combo}x Combo` : `\u{1F525} 1x`;
-    bar.innerHTML = `<span class="lvl-rb-xp">+${xp} XP</span><span class="${comboClass}">${comboText}</span>`;
-    bar.style.opacity = "1";
+    const xpCls = xp < 0 ? "lvl-rb-xp negative" : "lvl-rb-xp";
+    const xpTxt = xp < 0 ? `${xp} XP` : `+${xp} XP`;
+    let comboCls = "lvl-rb-combo";
+    let comboTxt = `\u{1F525} 1x`;
+    if (combo > 1) {
+        comboCls = "lvl-rb-combo active";
+        comboTxt = `\u{1F525} ${combo}x Combo`;
+    } else if (combo === 0) {
+        comboCls = "lvl-rb-combo broken";
+        comboTxt = `\u{1F6AB} Combo broken`;
+    }
+    bar.innerHTML = `<span class="${xpCls}">${xpTxt}</span><span class="${comboCls}">${comboTxt}</span>`;
+    (bar as HTMLElement).style.opacity = "1";
 }
 
 const bridge: LuaBridge = {
@@ -270,20 +287,6 @@ const bridge: LuaBridge = {
         currentData = result.summary;
         updateHud();
 
-        const detail = result.xpDetail;
-        let toastText = `+${result.xp} XP`;
-
-        if (result.isNew) {
-            toastText += " (new card)";
-        } else if (detail.daily100_bonus > 0) {
-            toastText += " (100 cards!)";
-        } else if (detail.streak_mult > 1) {
-            toastText += ` (streak x${detail.streak_mult})`;
-        } else if (detail.combo_mult > 1) {
-            toastText += ` (combo x${detail.combo_mult})`;
-        }
-
-        showToast(toastText);
         updateReviewerBar(result.xp, currentData.combo);
 
         if (result.badges) {
