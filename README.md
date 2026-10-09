@@ -23,12 +23,12 @@ Open Anki → Tools → Add-ons → Level → Config
 | `showStatsPanel` | `true` | Show stats panel on deck browser |
 | `showLevelUpModal` | `true` | Show level up animation |
 | `showBadges` | `true` | Show badge notifications |
-| `dailyGoal` | `50` | Daily review target |
+| `dailyGoal` | `50` | Daily review target (10–500) |
 | `confettiEnabled` | `true` | Enable confetti on level up |
 | `soundEnabled` | `true` | Enable sounds |
-| `streakBonusMax` | `50` | Max streak bonus percentage |
-| `comboThreshold` | `10` | Cards needed for combo steps |
-| `speedBonusThreshold` | `5` | Seconds for speed bonus |
+| `streakBonusMax` | `50` | Max streak bonus percentage (0–50) |
+| `comboThreshold` | `10` | Cards needed for combo steps (5–50) |
+| `speedBonusThreshold` | `5` | Seconds for speed bonus (0–10) |
 
 
 ## XP Calculation

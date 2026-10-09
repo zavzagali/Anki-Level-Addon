@@ -94,7 +94,10 @@ def _apply_setting(payload: str) -> None:
         if key in data:
             config[key] = bool(data[key])
     if "dailyGoal" in data:
-        config["dailyGoal"] = max(1, int(data["dailyGoal"]))
+        try:
+            config["dailyGoal"] = conf._clamp("dailyGoal", int(data["dailyGoal"]))
+        except (TypeError, ValueError):
+            pass
     if "hudPosition" in data:
         config["hudPosition"] = str(data["hudPosition"])
     conf.save(config)
