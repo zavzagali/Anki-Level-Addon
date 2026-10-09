@@ -7,3 +7,4 @@ node_modules/
 web/*.js.map
 web/*.d.ts
 *.pyc
+git
