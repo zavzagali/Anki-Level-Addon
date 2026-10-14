@@ -11,6 +11,14 @@ from ..features.levelup import store as level_store
 from ..features.levelup import badges as badge_module
 
 
+try:
+    _WEB_ROOT = f"/_addons/{mw.addonManager.addonFromModule(__name__.split('.')[0])}"
+except Exception:
+    _WEB_ROOT = ""
+_FLAME_URL = f"{_WEB_ROOT}/web/assets/ui/flame.svg"
+_BROKEN_URL = f"{_WEB_ROOT}/web/assets/ui/broken.svg"
+
+
 _last_answer_time = 0.0
 _fade_timer = None
 _pending_feedback = None  # (xp, combo) shown on next question so it survives DOM reload
@@ -38,6 +46,7 @@ _INLINE_CSS = """
 #lvl-reviewer-bar .lvl-rb-combo { font-weight: 600; font-size: 11px; color: var(--lvl-subtle, #98989d); }
 #lvl-reviewer-bar .lvl-rb-combo.active { color: #FF9F0A; }
 #lvl-reviewer-bar .lvl-rb-combo.broken { color: #FF453A; font-style: italic; }
+#lvl-reviewer-bar img.lvl-rb-icon { width: 12px; height: 12px; vertical-align: -2px; }
 """
 
 
@@ -68,13 +77,13 @@ def _feedback_js(xp: int, combo: int) -> str:
 
     if combo > 1:
         combo_cls = "lvl-rb-combo active"
-        combo_txt = f"\U0001f525 {combo}x Combo"
+        combo_txt = f'<img class="lvl-rb-icon" src="{_FLAME_URL}" alt="" width="12" height="12"> {combo}x Combo'
     elif combo == 1:
         combo_cls = "lvl-rb-combo"
-        combo_txt = "\U0001f525 1x"
+        combo_txt = f'<img class="lvl-rb-icon" src="{_FLAME_URL}" alt="" width="12" height="12"> 1x'
     else:
         combo_cls = "lvl-rb-combo broken"
-        combo_txt = "\U0001f6ab Combo broken"
+        combo_txt = f'<img class="lvl-rb-icon" src="{_BROKEN_URL}" alt="" width="12" height="12"> Combo broken'
 
     # JSON-encode dynamic strings so quotes/emoji survive JS injection.
     payload = json.dumps({

@@ -4,6 +4,7 @@ declare global {
     interface Window {
         Lua?: LuaBridge;
         LUA_DATA?: LevelUpSummary;
+        LUA_ASSET_ROOT?: string;
     }
 }
 
@@ -14,6 +15,7 @@ export interface LevelUpSummary {
     xpForLevel: number;
     title: string;
     color: string;
+    levelIcon?: string;
     streak: number;
     bestStreak: number;
     totalCards: number;
@@ -56,8 +58,10 @@ export interface BadgeResult {
     name: string;
     desc: string;
     icon: string;
+    asset?: string;
     tier: number;
     tierIcon: string;
+    tierAsset?: string;
     tierName: string;
 }
 
@@ -66,8 +70,10 @@ export interface BadgeDef {
     name: string;
     desc: string;
     icon: string;
+    asset?: string;
     tier: number;
     tierIcon: string;
+    tierAsset?: string;
     tierName: string;
     earned: boolean;
 }
@@ -100,9 +106,32 @@ function getData(): LevelUpSummary {
     return window.LUA_DATA || {
         level: 1, totalXp: 0, xpInLevel: 0, xpForLevel: 50,
         title: "Novice", color: "rgb(48, 209, 88)",
+        levelIcon: "levels/novice.svg",
         streak: 0, bestStreak: 0, totalCards: 0,
         todayXp: 0, todayCards: 0, todayCorrect: 0, combo: 0, badges: {}
     };
+}
+
+function assetRoot(): string {
+    return window.LUA_ASSET_ROOT || "";
+}
+
+function assetUrl(path?: string): string {
+    if (!path) return "";
+    if (path.startsWith("/") || path.startsWith("http")) return path;
+    const root = assetRoot();
+    return root ? `${root}/${path}` : path;
+}
+
+function escapeAttr(s: string): string {
+    return s.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
+}
+
+/** Custom SVG artwork with emoji fallback (icon = legacy emoji). */
+function iconHtml(asset: string | undefined, fallbackEmoji: string, cls: string, size: number, alt: string): string {
+    const url = asset ? assetUrl(asset) : "";
+    if (!url) return `<span class="${cls}-fallback">${fallbackEmoji}</span>`;
+    return `<img class="${cls}" src="${escapeAttr(url)}" alt="${escapeAttr(alt)}" width="${size}" height="${size}" loading="lazy" />`;
 }
 
 let currentData = getData();
@@ -113,30 +142,41 @@ function xpPct(d: LevelUpSummary): number {
 }
 
 function updateHud(): void {
-    const bar = document.getElementById("lua-level-bar");
-    if (!bar) return;
     const d = currentData;
 
-    const levelEl = bar.querySelector(".lua-lb-level");
-    if (levelEl) levelEl.textContent = `Lvl ${d.level}`;
+    const bar = document.getElementById("lua-level-bar");
+    if (bar) {
+        const levelEl = bar.querySelector(".lua-lb-level");
+        if (levelEl) levelEl.textContent = `Lvl ${d.level}`;
 
-    const titleEl = bar.querySelector(".lua-lb-title");
-    if (titleEl) titleEl.textContent = d.title;
+        const titleEl = bar.querySelector(".lua-lb-title");
+        if (titleEl) titleEl.textContent = d.title;
 
-    const fill = bar.querySelector(".lua-lb-xp-fill") as HTMLElement;
-    if (fill) {
-        fill.style.width = `${xpPct(d)}%`;
-        fill.style.background = d.color;
+        const iconEl = bar.querySelector(".lua-lb-level-icon") as HTMLImageElement | null;
+        if (iconEl && d.levelIcon) iconEl.src = assetUrl(d.levelIcon);
+
+        const fill = bar.querySelector(".lua-lb-xp-fill") as HTMLElement;
+        if (fill) {
+            fill.style.width = `${xpPct(d)}%`;
+            fill.style.background = d.color;
+        }
+
+        const xpText = bar.querySelector(".lua-lb-xp-text");
+        if (xpText) xpText.textContent = `${d.xpInLevel}/${d.xpForLevel} XP`;
+
+        const streakEl = bar.querySelector(".lua-lb-streak");
+        if (streakEl) streakEl.innerHTML = `${iconHtml("ui/flame.svg", "", "lua-lb-streak-img", 13, "streak")} ${d.streak}`;
+
+        const todayEl = bar.querySelector(".lua-lb-cards");
+        if (todayEl) todayEl.textContent = `${d.todayCards} today`;
     }
 
-    const xpText = bar.querySelector(".lua-lb-xp-text");
-    if (xpText) xpText.textContent = `${d.xpInLevel}/${d.xpForLevel} XP`;
-
-    const streakEl = bar.querySelector(".lua-lb-streak");
-    if (streakEl) streakEl.textContent = `\u{1F525} ${d.streak}`;
-
-    const todayEl = bar.querySelector(".lua-lb-cards");
-    if (todayEl) todayEl.textContent = `${d.todayCards} today`;
+    // Server-rendered panel from __init__.py (_panel_html) — keep icon fresh.
+    const panelIcon = document.querySelector("#lvlup-panel .lvlup-level-icon") as HTMLImageElement | null;
+    if (panelIcon && d.levelIcon) {
+        const url = assetUrl(d.levelIcon);
+        if (url && panelIcon.getAttribute("src") !== url) panelIcon.src = url;
+    }
 }
 
 function showToast(text: string): void {
@@ -151,22 +191,23 @@ function showBadgeToast(badge: BadgeResult): void {
     const toast = document.createElement("div");
     toast.className = "lua-badge-toast";
     toast.innerHTML = `
-        <span class="lua-badge-icon">${badge.icon}</span>
+        <span class="lua-badge-icon">${iconHtml(badge.asset, badge.icon, "lua-badge-img", 26, badge.name)}</span>
         <span class="lua-badge-info">
             <span class="lua-badge-label">${badge.tierName} Badge!</span>
-            <span class="lua-badge-name">${badge.name} ${badge.tierIcon}</span>
+            <span class="lua-badge-name">${badge.name} ${iconHtml(badge.tierAsset, badge.tierIcon, "lua-tier-img", 14, badge.tierName)}</span>
         </span>
     `;
     document.body.appendChild(toast);
     setTimeout(() => toast.remove(), 3500);
 }
 
-function showLevelUpModal(level: number, title: string): void {
+function showLevelUpModal(level: number, title: string, levelIcon?: string): void {
     const overlay = document.createElement("div");
     overlay.className = "lua-levelup-overlay";
+    const icon = iconHtml(levelIcon || currentData.levelIcon, "", "lua-levelup-img", 64, title);
     overlay.innerHTML = `
         <div class="lua-levelup-card">
-            <div class="lua-levelup-icon">\u{1F389}</div>
+            <div class="lua-levelup-icon">${icon}</div>
             <div class="lua-levelup-label">Level Up!</div>
             <div class="lua-levelup-number">${level}</div>
             <div class="lua-levelup-title">${title}</div>
@@ -207,10 +248,10 @@ function renderBadges(badges: BadgeDef[]): void {
 
     grid.innerHTML = badges.map(b => {
         const cls = b.earned ? "earned" : "locked";
-        const tierDisplay = b.earned ? b.tierIcon : "";
+        const tierDisplay = b.earned ? iconHtml(b.tierAsset, b.tierIcon, "lua-tier-img", 14, b.tierName) : "";
         return `
-            <div class="lua-badge-card ${cls}">
-                <div class="lua-badge-card-icon">${b.icon}</div>
+            <div class="lua-badge-card ${cls} tier-${b.tier}">
+                <div class="lua-badge-card-icon">${iconHtml(b.asset, b.icon, "lua-badge-card-img", 30, b.name)}</div>
                 <div class="lua-badge-card-name">${b.name}</div>
                 <div class="lua-badge-card-tier">${tierDisplay}</div>
             </div>
@@ -250,6 +291,9 @@ function injectReviewerCss(): void {
         #lvl-reviewer-bar .lvl-rb-combo.broken {
             color: #FF453A; font-style: italic;
         }
+        #lvl-reviewer-bar img.lvl-rb-icon {
+            width: 12px; height: 12px; vertical-align: -2px;
+        }
     `;
     document.head.appendChild(style);
 }
@@ -264,14 +308,16 @@ function updateReviewerBar(xp: number, combo: number): void {
     }
     const xpCls = xp < 0 ? "lvl-rb-xp negative" : "lvl-rb-xp";
     const xpTxt = xp < 0 ? `${xp} XP` : `+${xp} XP`;
+    const flameImg = iconHtml("ui/flame.svg", "", "lvl-rb-icon", 12, "combo");
+    const brokenImg = iconHtml("ui/broken.svg", "", "lvl-rb-icon", 12, "broken");
     let comboCls = "lvl-rb-combo";
-    let comboTxt = `\u{1F525} 1x`;
+    let comboTxt = `${flameImg} 1x`;
     if (combo > 1) {
         comboCls = "lvl-rb-combo active";
-        comboTxt = `\u{1F525} ${combo}x Combo`;
+        comboTxt = `${flameImg} ${combo}x Combo`;
     } else if (combo === 0) {
         comboCls = "lvl-rb-combo broken";
-        comboTxt = `\u{1F6AB} Combo broken`;
+        comboTxt = `${brokenImg} Combo broken`;
     }
     bar.innerHTML = `<span class="${xpCls}">${xpTxt}</span><span class="${comboCls}">${comboTxt}</span>`;
     (bar as HTMLElement).style.opacity = "1";
@@ -296,12 +342,12 @@ const bridge: LuaBridge = {
         }
 
         if (result.levelUp) {
-            setTimeout(() => showLevelUpModal(result.level, result.newTitle), 600);
+            setTimeout(() => showLevelUpModal(result.level, result.newTitle, result.summary.levelIcon), 600);
         }
     },
 
     onLevelUp(level: number, title: string): void {
-        showLevelUpModal(level, title);
+        showLevelUpModal(level, title, currentData.levelIcon);
     },
 
     onMonthStats(stats: DayStat[]): void {

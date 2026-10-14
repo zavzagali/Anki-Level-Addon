@@ -59,7 +59,7 @@ def _push_month_stats() -> None:
         print(f"[Level] month_stats eval error: {e}")
 
 
-from ..features.levelup.badges import TIER_ICONS, TIER_NAMES
+from ..features.levelup.badges import TIER_ASSETS, TIER_ICONS, TIER_NAMES
 
 
 def _push_badges() -> None:
@@ -71,6 +71,7 @@ def _push_badges() -> None:
         b["tier"] = tier
         b["earned"] = tier > 0
         b["tierIcon"] = TIER_ICONS.get(tier - 1, "") if tier > 0 else ""
+        b["tierAsset"] = TIER_ASSETS.get(tier - 1, "") if tier > 0 else ""
         b["tierName"] = TIER_NAMES.get(tier - 1, "") if tier > 0 else ""
     try:
         mw.deckBrowser.web.eval(

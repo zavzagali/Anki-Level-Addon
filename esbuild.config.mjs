@@ -35,5 +35,6 @@ if (watch) {
     console.log("Watching for changes...");
 } else {
     await Promise.all([shared.rebuild(), levelup.rebuild(), stats.rebuild()]);
+    await Promise.all([shared.dispose(), levelup.dispose(), stats.dispose()]);
     console.log("Build complete.");
 }
