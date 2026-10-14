@@ -34,6 +34,7 @@ def _summary() -> dict:
         return {
             "level": 1, "totalXp": 0, "xpInLevel": 0, "xpForLevel": 50,
             "title": "Novice", "color": "rgb(48, 209, 88)",
+            "levelIcon": "levels/novice.svg",
             "streak": 0, "bestStreak": 0, "totalCards": 0,
             "todayXp": 0, "todayCards": 0, "todayCorrect": 0, "combo": 0,
             "bestEasyCombo": 0, "dailyGoal": 50,
@@ -54,9 +55,11 @@ def _panel_html(s: dict) -> str:
     if s.get("xpForLevel", 0) > 0:
         pct = min(100.0, (s["xpInLevel"] / s["xpForLevel"]) * 100)
     color = leveling.level_color(s["level"])
+    icon_src = f"{web_root}/assets/{s.get('levelIcon', 'levels/novice.svg')}"
     return (
         '<div id="lvlup-panel">'
         '<div class="lvlup-panel-inner">'
+        f'<img class="lvlup-level-icon" src="{icon_src}" alt="{s["title"]}" width="28" height="28">'
         f'<div class="lvlup-level" style="color:{color}">Lvl {s["level"]}</div>'
         f'<div class="lvlup-title">{s["title"]}</div>'
         '<div class="lvlup-xp-bar">'
@@ -64,9 +67,9 @@ def _panel_html(s: dict) -> str:
         f'<span class="lvlup-xp-text">{s["xpInLevel"]}/{s["xpForLevel"]} XP</span>'
         '</div>'
         '<div class="lvlup-stats">'
-        f'<span>\U0001f525 {s["streak"]} days</span>'
-        f'<span>\U0001f0cf {s["totalCards"]} cards</span>'
-        f'<span>\u26a1 {s["totalXp"]} XP</span>'
+        f'<span class="lvlup-stat"><img src="{web_root}/assets/ui/flame.svg" alt="streak" width="13" height="13"> {s["streak"]} days</span>'
+        f'<span class="lvlup-stat"><img src="{web_root}/assets/ui/cards.svg" alt="cards" width="13" height="13"> {s["totalCards"]} cards</span>'
+        f'<span class="lvlup-stat"><img src="{web_root}/assets/ui/bolt.svg" alt="xp" width="13" height="13"> {s["totalXp"]} XP</span>'
         '</div>'
         '</div>'
         '</div>'
@@ -92,6 +95,7 @@ def on_webview_will_set_content(web_content, context) -> None:
         "showBadges": config.get("showBadges", True),
     }
     web_content.head += f'<script>window.LUA_DATA = {json.dumps(summary)};</script>'
+    web_content.head += f'<script>window.LUA_ASSET_ROOT = {json.dumps(f"{web_root}/assets")};</script>'
     web_content.head += f'<script>window.LUA_CONFIG = {json.dumps(lua_config)};</script>'
     web_content.head += f'<script>window.LUA_MONTH_STATS = {json.dumps(month_stats)};</script>'
     web_content.head += f'<script src="{_asset("shared.js")}"></script>'

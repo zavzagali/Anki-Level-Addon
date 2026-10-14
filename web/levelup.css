@@ -406,6 +406,92 @@ html.night, html.dark, body.night, body.dark {
     margin-bottom: 1px;
 }
 
+.lua-badge-card-icon .lua-badge-card-img {
+    width: 30px;
+    height: 30px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.lua-badge-card.locked .lua-badge-card-img {
+    filter: grayscale(1);
+    opacity: 0.6;
+}
+
+.lua-badge-card.earned.tier-0 {
+    box-shadow: inset 0 0 0 1px rgba(205, 127, 50, 0.55);
+}
+
+.lua-badge-card.earned.tier-1 {
+    box-shadow: inset 0 0 0 1px rgba(152, 152, 157, 0.6);
+}
+
+.lua-badge-card.earned.tier-2 {
+    box-shadow: inset 0 0 0 1px rgba(255, 214, 10, 0.6);
+}
+
+.lua-badge-icon {
+    display: flex;
+    align-items: center;
+}
+
+.lua-badge-icon .lua-badge-img {
+    width: 26px;
+    height: 26px;
+    display: block;
+}
+
+.lua-levelup-icon .lua-levelup-img {
+    width: 64px;
+    height: 64px;
+    display: inline-block;
+}
+
+.lvlup-level-icon {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+}
+
+.lvlup-stat {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+}
+
+.lvlup-stat img {
+    width: 13px;
+    height: 13px;
+}
+
+.lua-lb-level-icon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+.lua-lb-streak {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+}
+
+.lua-lb-streak-img {
+    width: 13px;
+    height: 13px;
+}
+
+.lua-tier-img {
+    width: 14px;
+    height: 14px;
+    vertical-align: -2px;
+}
+
+.lua-badge-name .lua-tier-img,
+.lua-badge-card-tier .lua-tier-img {
+    display: inline-block;
+}
+
 .lua-badge-card-name {
     font-size: 9px;
     font-weight: 600;

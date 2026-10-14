@@ -2,7 +2,16 @@
 
 TIER_ICONS = {0: "🥉", 1: "🥈", 2: "🥇"}
 TIER_NAMES = {0: "Bronze", 1: "Silver", 2: "Gold"}
+# Custom tier artwork (paths relative to web/assets/). TIER_ICONS stays
+# as a text fallback for non-HTML contexts.
+TIER_ASSETS = {0: "ui/tier_bronze.svg", 1: "ui/tier_silver.svg", 2: "ui/tier_gold.svg"}
 MAX_TIER = 3
+
+
+def badge_asset(badge_id: str) -> str:
+    """Asset path relative to web/assets/. Tier variants later:
+    badges/<id>_bronze|silver|gold.svg — fallback to badges/<id>.svg."""
+    return f"badges/{badge_id}.svg"
 
 BADGES = {
     "first_card": {
@@ -170,8 +179,10 @@ def check_badges(store) -> list:
                     "name": badge["name"],
                     "desc": badge["desc"],
                     "icon": badge["icon"],
+                    "asset": badge_asset(badge_id),
                     "tier": current_tier,
                     "tierIcon": TIER_ICONS[current_tier],
+                    "tierAsset": TIER_ASSETS[current_tier],
                     "tierName": TIER_NAMES[current_tier],
                 })
     return earned
@@ -186,5 +197,6 @@ def get_all_badges() -> list:
             "name": badge["name"],
             "desc": badge["desc"],
             "icon": badge["icon"],
+            "asset": badge_asset(badge_id),
         })
     return result

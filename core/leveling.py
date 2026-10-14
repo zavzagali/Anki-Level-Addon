@@ -11,6 +11,18 @@ TITLES = [
     (100, "Anki God"),
 ]
 
+# Custom level artwork — one SVG per title, stored under web/assets/.
+# Paths are relative to web/assets/ so the frontend can join them with
+# window.LUA_ASSET_ROOT (injected by __init__.py).
+LEVEL_ASSETS = [
+    (1, "levels/novice.svg"),
+    (11, "levels/apprentice.svg"),
+    (26, "levels/master.svg"),
+    (51, "levels/wizard.svg"),
+    (76, "levels/legend.svg"),
+    (100, "levels/god.svg"),
+]
+
 XP_EASE = {1: -8, 2: 0, 3: 5, 4: 8}
 
 # Color stops: (level, hue, saturation, lightness)
@@ -78,6 +90,15 @@ def get_title(level: int) -> str:
         if level >= min_lvl:
             return title_text
     return title
+
+
+def level_asset(level: int) -> str:
+    """Return asset path (relative to web/assets/) for a level."""
+    asset = LEVEL_ASSETS[0][1]
+    for min_lvl, path in LEVEL_ASSETS:
+        if level >= min_lvl:
+            asset = path
+    return asset
 
 
 def streak_multiplier(streak: int, max_bonus: int = 50) -> float:

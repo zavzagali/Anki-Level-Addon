@@ -6,7 +6,7 @@ cd "$ROOT"
 
 # Build TypeScript → web/
 echo "Building TypeScript..."
-export PATH="/home/novo/.local/node/bin:$PATH"
+export PATH="$HOME/.local/node/bin:$PATH"
 npm run build
 
 # Build .ankiaddon zip
